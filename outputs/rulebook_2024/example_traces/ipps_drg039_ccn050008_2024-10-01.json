@@ -1,0 +1,147 @@
+{
+  "payment_system": "IPPS",
+  "service_date": "2024-10-01",
+  "calculation_status": "calculated",
+  "input_context": {
+    "ms_drg": "039",
+    "discharge_date": "2024-10-01",
+    "provider_ccn": "050008",
+    "quality_submitted": true,
+    "meaningful_ehr_user": true,
+    "provider_state": null,
+    "fiscal_year": "FY2025"
+  },
+  "selected_rule_versions": [
+    {
+      "rule_id": "ipps.fy2025.base_operating_payment",
+      "rule_version": "FY2025",
+      "effective_start": "2024-10-01",
+      "effective_end": "2025-09-30",
+      "execution_status": "executable",
+      "source_artifact_id": "cms_ipps_fy2025_table1",
+      "source_locator": "Tables 1A/1B, 2, and 5"
+    },
+    {
+      "rule_id": "ipps.fy2025.ms_drg_weight",
+      "rule_version": "FY2025",
+      "effective_start": "2024-10-01",
+      "effective_end": "2025-09-30",
+      "execution_status": "executable",
+      "source_artifact_id": "cms_ipps_fy2025_table5",
+      "source_locator": "Corrected/final table workbook"
+    },
+    {
+      "rule_id": "ipps.fy2025.standardized_amount",
+      "rule_version": "FY2025",
+      "effective_start": "2024-10-01",
+      "effective_end": "2025-09-30",
+      "execution_status": "executable",
+      "source_artifact_id": "cms_ipps_fy2025_table1",
+      "source_locator": "Corrected/final table workbook"
+    },
+    {
+      "rule_id": "ipps.fy2025.wage_index",
+      "rule_version": "FY2025",
+      "effective_start": "2024-10-01",
+      "effective_end": "2025-09-30",
+      "execution_status": "executable",
+      "source_artifact_id": "cms_ipps_fy2025_wage_tables",
+      "source_locator": "Corrected/final table workbook"
+    }
+  ],
+  "selected_parameters": [
+    {
+      "assignment_id": "ipps.fy2025.ms_drg.039",
+      "rule_id": "ipps.fy2025.ms_drg_weight",
+      "code": "039",
+      "effective_start": "2024-10-01",
+      "effective_end": "2025-09-30",
+      "value_status": "published_correction_notice",
+      "source_artifact_id": "cms_ipps_fy2025_table5",
+      "source_locator": "FY2025 IPPS Final Rule and Correction Notice Table 5.xlsx > FY 2025 Table 5 CN!H39",
+      "parameter_name": "ms_drg_weight",
+      "numeric_value": "1.1382"
+    },
+    {
+      "parameter_id": "ipps.fy2025.050008.wage_index",
+      "rule_id": "ipps.fy2025.wage_index",
+      "key_type": "ccn",
+      "key_value": "050008",
+      "provider_id": "050008",
+      "effective_start": "2024-10-01",
+      "effective_end": "2025-09-30",
+      "unit": "index",
+      "value_status": "published_ifc",
+      "source_artifact_id": "cms_ipps_fy2025_wage_tables",
+      "source_locator": "CMS-1808-IFC Tables 2, 3, 4A, 4B.zip > CMS-1808-IFC Tables 2, 3, 4A, 4B.xlsx > Table 2 IFC!F207",
+      "parameter_name": "wage_index",
+      "numeric_value": "1.7807"
+    },
+    {
+      "parameter_id": "ipps.fy2025.quality_submitted_ehr_user.labor_share_67.6.labor",
+      "rule_id": "ipps.fy2025.standardized_amount",
+      "key_type": "hospital_update_category_and_labor_share",
+      "key_value": "quality_submitted_ehr_user|labor_share=67.6",
+      "effective_start": "2024-10-01",
+      "effective_end": "2025-09-30",
+      "unit": "USD",
+      "value_status": "published_ifc",
+      "source_artifact_id": "cms_ipps_fy2025_table1",
+      "source_locator": "CMS-1808-FR, CN and IFC Tables 1A - 1E.xlsx > FY 2025 IFC Table 1A-1E!A5",
+      "parameter_name": "standardized_labor_amount",
+      "numeric_value": "4478.0900"
+    },
+    {
+      "parameter_id": "ipps.fy2025.quality_submitted_ehr_user.labor_share_67.6.nonlabor",
+      "rule_id": "ipps.fy2025.standardized_amount",
+      "key_type": "hospital_update_category_and_labor_share",
+      "key_value": "quality_submitted_ehr_user|labor_share=67.6",
+      "effective_start": "2024-10-01",
+      "effective_end": "2025-09-30",
+      "unit": "USD",
+      "value_status": "published_ifc",
+      "source_artifact_id": "cms_ipps_fy2025_table1",
+      "source_locator": "CMS-1808-FR, CN and IFC Tables 1A - 1E.xlsx > FY 2025 IFC Table 1A-1E!B5",
+      "parameter_name": "standardized_nonlabor_amount",
+      "numeric_value": "2146.3000"
+    }
+  ],
+  "components": {
+    "fiscal_year": "FY2025",
+    "ms_drg_relative_weight": "1.1382",
+    "wage_index": "1.7807",
+    "labor_share_percent": "67.6",
+    "operating_cola": "1",
+    "labor_standardized_amount": "4478.0900",
+    "nonlabor_standardized_amount": "2146.3000",
+    "wage_adjusted_labor_component": "7974.13486300",
+    "wage_adjusted_standardized_amount": "10120.43486300",
+    "unrounded_base_operating_payment": "11519.078961066600",
+    "base_operating_payment_9dp": "11519.078961067"
+  },
+  "calculated_amount": "11519.08",
+  "amount_label": "base_operating_payment_before_adjustments",
+  "unsupported_adjustments": [
+    "ime",
+    "dsh",
+    "uncompensated_care",
+    "ntap",
+    "outlier",
+    "hrrp",
+    "vbp",
+    "hac",
+    "transfer_policy",
+    "capital_payment",
+    "other_provider_specific_adjustments"
+  ],
+  "warnings": [
+    "Base IPPS operating payment is not a final claim payment."
+  ],
+  "source_artifact_ids": [
+    "cms_ipps_fy2025_table1",
+    "cms_ipps_fy2025_table5",
+    "cms_ipps_fy2025_wage_tables"
+  ],
+  "missing_rule": null,
+  "missing_parameters": []
+}

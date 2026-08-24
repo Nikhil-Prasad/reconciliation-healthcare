@@ -23,6 +23,9 @@ hcl-download = "reconciliation_healthcare.download:main"
 hcl-inspect = "reconciliation_healthcare.inspect_nhea:main"
 hcl-build = "reconciliation_healthcare.ledger:main"
 hcl-validate = "reconciliation_healthcare.validation:main"
+hcl-rulebook-download = "reconciliation_healthcare.rulebook.sources:main"
+hcl-rulebook-build = "reconciliation_healthcare.rulebook.build:main"
+hcl-rulebook-validate = "reconciliation_healthcare.rulebook.validation:main"
 
 [build-system]
 requires = ["hatchling"]

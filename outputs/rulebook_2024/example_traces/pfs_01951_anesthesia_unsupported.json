@@ -1,0 +1,41 @@
+{
+  "payment_system": "PFS",
+  "service_date": "2024-01-15",
+  "calculation_status": "unsupported",
+  "input_context": {
+    "code": "01951",
+    "modifier": "",
+    "date_of_service": "2024-01-15",
+    "locality": "AL:00",
+    "setting": "facility"
+  },
+  "selected_rule_versions": [],
+  "selected_parameters": [
+    {
+      "parameter_id": "pfs.rvu24a.01951.blank",
+      "rule_id": "pfs.rvu24a.base_payment",
+      "parameter_name": "code_assignment",
+      "assignment_type": "pfs_rvu",
+      "code": "01951",
+      "modifier": "",
+      "status_code": "J",
+      "effective_start": "2024-01-01",
+      "effective_end": "2024-03-08",
+      "source_artifact_id": "cms_pfs_rvu24a",
+      "source_locator": "PPRRVU24_JAN.csv row 6068",
+      "value_status": "published"
+    }
+  ],
+  "components": {},
+  "calculated_amount": null,
+  "amount_label": null,
+  "unsupported_adjustments": [
+    "pfs.anesthesia"
+  ],
+  "warnings": [],
+  "source_artifact_ids": [
+    "cms_pfs_rvu24a"
+  ],
+  "missing_rule": "pfs.anesthesia",
+  "missing_parameters": []
+}

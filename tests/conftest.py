@@ -18,12 +18,18 @@ _raw_parent.mkdir(parents=True)
     PROJECT_ROOT / "data" / "raw" / "cms_nhea",
     target_is_directory=True,
 )
+(_raw_parent / "cms_payment_rules").symlink_to(
+    PROJECT_ROOT / "data" / "raw" / "cms_payment_rules",
+    target_is_directory=True,
+)
 os.environ["HCL_PROJECT_ROOT"] = str(ISOLATED_PROJECT_ROOT)
 
 # Project paths are resolved at import time, after the isolated root is configured.
 from reconciliation_healthcare.inspect_nhea import write_inventory
 from reconciliation_healthcare.ledger import build_ledger
 from reconciliation_healthcare.normalize_nhea import normalize_all
+from reconciliation_healthcare.rulebook.build import build_rulebook
+from reconciliation_healthcare.rulebook.store import RulebookStore
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -48,3 +54,10 @@ def built_artifacts() -> dict[str, pd.DataFrame]:
         "ledger": ledger,
         "ledger_cells": ledger_cells,
     }
+
+
+@pytest.fixture(scope="session")
+def built_rulebook_store(built_artifacts: dict[str, pd.DataFrame]) -> RulebookStore:
+    """Build Stage 2 artifacts in the same isolated test tree."""
+    build_rulebook()
+    return RulebookStore.load()

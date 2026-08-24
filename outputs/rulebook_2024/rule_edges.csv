@@ -1,0 +1,71 @@
+edge_id,from_rule_id,edge_type,to_rule_id,effective_start,effective_end,notes
+ipps.final_payment--depends_on--ipps.fy2024.base_operating_payment,ipps.final_payment,depends_on,ipps.fy2024.base_operating_payment,2024-01-01,2024-09-30,
+ipps.final_payment--depends_on--ipps.fy2025.base_operating_payment,ipps.final_payment,depends_on,ipps.fy2025.base_operating_payment,2024-10-01,2024-12-31,
+ipps.final_payment--may_add--ipps.dsh,ipps.final_payment,may_add,ipps.dsh,2024-01-01,2024-12-31,
+ipps.final_payment--may_add--ipps.ime,ipps.final_payment,may_add,ipps.ime,2024-01-01,2024-12-31,
+ipps.final_payment--may_add--ipps.ntap,ipps.final_payment,may_add,ipps.ntap,2024-01-01,2024-12-31,
+ipps.final_payment--may_add--ipps.outlier,ipps.final_payment,may_add,ipps.outlier,2024-01-01,2024-12-31,
+ipps.final_payment--may_add--ipps.uncompensated_care,ipps.final_payment,may_add,ipps.uncompensated_care,2024-01-01,2024-12-31,
+ipps.final_payment--may_apply--ipps.hac,ipps.final_payment,may_apply,ipps.hac,2024-01-01,2024-12-31,
+ipps.final_payment--may_apply--ipps.hrrp,ipps.final_payment,may_apply,ipps.hrrp,2024-01-01,2024-12-31,
+ipps.final_payment--may_apply--ipps.transfer,ipps.final_payment,may_apply,ipps.transfer,2024-01-01,2024-12-31,
+ipps.final_payment--may_apply--ipps.vbp,ipps.final_payment,may_apply,ipps.vbp,2024-01-01,2024-12-31,
+ipps.fy2024.base_operating_payment--depends_on--ipps.fy2024.ms_drg_weight,ipps.fy2024.base_operating_payment,depends_on,ipps.fy2024.ms_drg_weight,2023-10-01,2024-09-30,
+ipps.fy2024.base_operating_payment--depends_on--ipps.fy2024.standardized_amount,ipps.fy2024.base_operating_payment,depends_on,ipps.fy2024.standardized_amount,2023-10-01,2024-09-30,
+ipps.fy2024.base_operating_payment--depends_on--ipps.fy2024.wage_index,ipps.fy2024.base_operating_payment,depends_on,ipps.fy2024.wage_index,2023-10-01,2024-09-30,
+ipps.fy2025.base_operating_payment--depends_on--ipps.fy2025.ms_drg_weight,ipps.fy2025.base_operating_payment,depends_on,ipps.fy2025.ms_drg_weight,2024-10-01,2025-09-30,
+ipps.fy2025.base_operating_payment--depends_on--ipps.fy2025.standardized_amount,ipps.fy2025.base_operating_payment,depends_on,ipps.fy2025.standardized_amount,2024-10-01,2025-09-30,
+ipps.fy2025.base_operating_payment--depends_on--ipps.fy2025.wage_index,ipps.fy2025.base_operating_payment,depends_on,ipps.fy2025.wage_index,2024-10-01,2025-09-30,
+opps.2024_q1.published_rate--depends_on--opps.2024_q1.hcpcs_status_apc,opps.2024_q1.published_rate,depends_on,opps.2024_q1.hcpcs_status_apc,2024-01-01,2024-03-31,
+opps.2024_q2.published_rate--depends_on--opps.2024_q2.hcpcs_status_apc,opps.2024_q2.published_rate,depends_on,opps.2024_q2.hcpcs_status_apc,2024-04-01,2024-06-30,
+opps.2024_q3.published_rate--depends_on--opps.2024_q3.hcpcs_status_apc,opps.2024_q3.published_rate,depends_on,opps.2024_q3.hcpcs_status_apc,2024-07-01,2024-09-30,
+opps.2024_q4.published_rate--depends_on--opps.2024_q4.hcpcs_status_apc,opps.2024_q4.published_rate,depends_on,opps.2024_q4.hcpcs_status_apc,2024-10-01,2024-12-31,
+opps.final_payment--depends_on--opps.2024_q1.published_rate,opps.final_payment,depends_on,opps.2024_q1.published_rate,2024-01-01,2024-03-31,
+opps.final_payment--depends_on--opps.2024_q2.published_rate,opps.final_payment,depends_on,opps.2024_q2.published_rate,2024-04-01,2024-06-30,
+opps.final_payment--depends_on--opps.2024_q3.published_rate,opps.final_payment,depends_on,opps.2024_q3.published_rate,2024-07-01,2024-09-30,
+opps.final_payment--depends_on--opps.2024_q4.published_rate,opps.final_payment,depends_on,opps.2024_q4.published_rate,2024-10-01,2024-12-31,
+opps.final_payment--may_add--opps.outlier,opps.final_payment,may_add,opps.outlier,2024-01-01,2024-12-31,
+opps.final_payment--may_add--opps.pass_through,opps.final_payment,may_add,opps.pass_through,2024-01-01,2024-12-31,
+opps.final_payment--may_apply--opps.comprehensive_apc,opps.final_payment,may_apply,opps.comprehensive_apc,2024-01-01,2024-12-31,
+opps.final_payment--may_apply--opps.packaging,opps.final_payment,may_apply,opps.packaging,2024-01-01,2024-12-31,
+opps.final_payment--may_apply--opps.restated_drug_rate,opps.final_payment,may_apply,opps.restated_drug_rate,2024-01-01,2024-12-31,
+opps.final_payment--may_apply--opps.wage_adjustment,opps.final_payment,may_apply,opps.wage_adjustment,2024-01-01,2024-12-31,
+pfs.rvu24a.base_payment--depends_on--pfs.rvu24a.conversion_factor,pfs.rvu24a.base_payment,depends_on,pfs.rvu24a.conversion_factor,2024-01-01,2024-03-08,
+pfs.rvu24a.base_payment--depends_on--pfs.rvu24a.gpci,pfs.rvu24a.base_payment,depends_on,pfs.rvu24a.gpci,2024-01-01,2024-03-08,
+pfs.rvu24a.base_payment--depends_on--pfs.rvu24a.malpractice_rvu,pfs.rvu24a.base_payment,depends_on,pfs.rvu24a.malpractice_rvu,2024-01-01,2024-03-08,
+pfs.rvu24a.base_payment--depends_on--pfs.rvu24a.practice_expense_rvu,pfs.rvu24a.base_payment,depends_on,pfs.rvu24a.practice_expense_rvu,2024-01-01,2024-03-08,
+pfs.rvu24a.base_payment--depends_on--pfs.rvu24a.work_rvu,pfs.rvu24a.base_payment,depends_on,pfs.rvu24a.work_rvu,2024-01-01,2024-03-08,
+pfs.rvu24ar.base_payment--depends_on--pfs.rvu24ar.conversion_factor,pfs.rvu24ar.base_payment,depends_on,pfs.rvu24ar.conversion_factor,2024-03-09,2024-03-31,
+pfs.rvu24ar.base_payment--depends_on--pfs.rvu24ar.gpci,pfs.rvu24ar.base_payment,depends_on,pfs.rvu24ar.gpci,2024-03-09,2024-03-31,
+pfs.rvu24ar.base_payment--depends_on--pfs.rvu24ar.malpractice_rvu,pfs.rvu24ar.base_payment,depends_on,pfs.rvu24ar.malpractice_rvu,2024-03-09,2024-03-31,
+pfs.rvu24ar.base_payment--depends_on--pfs.rvu24ar.practice_expense_rvu,pfs.rvu24ar.base_payment,depends_on,pfs.rvu24ar.practice_expense_rvu,2024-03-09,2024-03-31,
+pfs.rvu24ar.base_payment--depends_on--pfs.rvu24ar.work_rvu,pfs.rvu24ar.base_payment,depends_on,pfs.rvu24ar.work_rvu,2024-03-09,2024-03-31,
+pfs.rvu24b.base_payment--depends_on--pfs.rvu24b.conversion_factor,pfs.rvu24b.base_payment,depends_on,pfs.rvu24b.conversion_factor,2024-04-01,2024-06-30,
+pfs.rvu24b.base_payment--depends_on--pfs.rvu24b.gpci,pfs.rvu24b.base_payment,depends_on,pfs.rvu24b.gpci,2024-04-01,2024-06-30,
+pfs.rvu24b.base_payment--depends_on--pfs.rvu24b.malpractice_rvu,pfs.rvu24b.base_payment,depends_on,pfs.rvu24b.malpractice_rvu,2024-04-01,2024-06-30,
+pfs.rvu24b.base_payment--depends_on--pfs.rvu24b.practice_expense_rvu,pfs.rvu24b.base_payment,depends_on,pfs.rvu24b.practice_expense_rvu,2024-04-01,2024-06-30,
+pfs.rvu24b.base_payment--depends_on--pfs.rvu24b.work_rvu,pfs.rvu24b.base_payment,depends_on,pfs.rvu24b.work_rvu,2024-04-01,2024-06-30,
+pfs.rvu24c.base_payment--depends_on--pfs.rvu24c.conversion_factor,pfs.rvu24c.base_payment,depends_on,pfs.rvu24c.conversion_factor,2024-07-01,2024-09-30,
+pfs.rvu24c.base_payment--depends_on--pfs.rvu24c.gpci,pfs.rvu24c.base_payment,depends_on,pfs.rvu24c.gpci,2024-07-01,2024-09-30,
+pfs.rvu24c.base_payment--depends_on--pfs.rvu24c.malpractice_rvu,pfs.rvu24c.base_payment,depends_on,pfs.rvu24c.malpractice_rvu,2024-07-01,2024-09-30,
+pfs.rvu24c.base_payment--depends_on--pfs.rvu24c.practice_expense_rvu,pfs.rvu24c.base_payment,depends_on,pfs.rvu24c.practice_expense_rvu,2024-07-01,2024-09-30,
+pfs.rvu24c.base_payment--depends_on--pfs.rvu24c.work_rvu,pfs.rvu24c.base_payment,depends_on,pfs.rvu24c.work_rvu,2024-07-01,2024-09-30,
+pfs.rvu24d.base_payment--depends_on--pfs.rvu24d.conversion_factor,pfs.rvu24d.base_payment,depends_on,pfs.rvu24d.conversion_factor,2024-10-01,2024-12-31,
+pfs.rvu24d.base_payment--depends_on--pfs.rvu24d.gpci,pfs.rvu24d.base_payment,depends_on,pfs.rvu24d.gpci,2024-10-01,2024-12-31,
+pfs.rvu24d.base_payment--depends_on--pfs.rvu24d.malpractice_rvu,pfs.rvu24d.base_payment,depends_on,pfs.rvu24d.malpractice_rvu,2024-10-01,2024-12-31,
+pfs.rvu24d.base_payment--depends_on--pfs.rvu24d.practice_expense_rvu,pfs.rvu24d.base_payment,depends_on,pfs.rvu24d.practice_expense_rvu,2024-10-01,2024-12-31,
+pfs.rvu24d.base_payment--depends_on--pfs.rvu24d.work_rvu,pfs.rvu24d.base_payment,depends_on,pfs.rvu24d.work_rvu,2024-10-01,2024-12-31,
+site.hospital_outpatient_path--may_combine_with--opps.2024_q1.published_rate,site.hospital_outpatient_path,may_combine_with,opps.2024_q1.published_rate,2024-01-01,2024-03-31,A separate facility payment is possible; claim adjudication is not inferred.
+site.hospital_outpatient_path--may_combine_with--opps.2024_q2.published_rate,site.hospital_outpatient_path,may_combine_with,opps.2024_q2.published_rate,2024-04-01,2024-06-30,A separate facility payment is possible; claim adjudication is not inferred.
+site.hospital_outpatient_path--may_combine_with--opps.2024_q3.published_rate,site.hospital_outpatient_path,may_combine_with,opps.2024_q3.published_rate,2024-07-01,2024-09-30,A separate facility payment is possible; claim adjudication is not inferred.
+site.hospital_outpatient_path--may_combine_with--opps.2024_q4.published_rate,site.hospital_outpatient_path,may_combine_with,opps.2024_q4.published_rate,2024-10-01,2024-12-31,A separate facility payment is possible; claim adjudication is not inferred.
+site.hospital_outpatient_path--routes_to--pfs.rvu24a.base_payment,site.hospital_outpatient_path,routes_to,pfs.rvu24a.base_payment,2024-01-01,2024-03-08,Select facility PE RVU.
+site.hospital_outpatient_path--routes_to--pfs.rvu24ar.base_payment,site.hospital_outpatient_path,routes_to,pfs.rvu24ar.base_payment,2024-03-09,2024-03-31,Select facility PE RVU.
+site.hospital_outpatient_path--routes_to--pfs.rvu24b.base_payment,site.hospital_outpatient_path,routes_to,pfs.rvu24b.base_payment,2024-04-01,2024-06-30,Select facility PE RVU.
+site.hospital_outpatient_path--routes_to--pfs.rvu24c.base_payment,site.hospital_outpatient_path,routes_to,pfs.rvu24c.base_payment,2024-07-01,2024-09-30,Select facility PE RVU.
+site.hospital_outpatient_path--routes_to--pfs.rvu24d.base_payment,site.hospital_outpatient_path,routes_to,pfs.rvu24d.base_payment,2024-10-01,2024-12-31,Select facility PE RVU.
+site.office_professional_path--routes_to--pfs.rvu24a.base_payment,site.office_professional_path,routes_to,pfs.rvu24a.base_payment,2024-01-01,2024-03-08,Select nonfacility PE RVU.
+site.office_professional_path--routes_to--pfs.rvu24ar.base_payment,site.office_professional_path,routes_to,pfs.rvu24ar.base_payment,2024-03-09,2024-03-31,Select nonfacility PE RVU.
+site.office_professional_path--routes_to--pfs.rvu24b.base_payment,site.office_professional_path,routes_to,pfs.rvu24b.base_payment,2024-04-01,2024-06-30,Select nonfacility PE RVU.
+site.office_professional_path--routes_to--pfs.rvu24c.base_payment,site.office_professional_path,routes_to,pfs.rvu24c.base_payment,2024-07-01,2024-09-30,Select nonfacility PE RVU.
+site.office_professional_path--routes_to--pfs.rvu24d.base_payment,site.office_professional_path,routes_to,pfs.rvu24d.base_payment,2024-10-01,2024-12-31,Select nonfacility PE RVU.

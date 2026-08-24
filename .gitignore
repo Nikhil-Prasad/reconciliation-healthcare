@@ -18,6 +18,8 @@ dist/
 # manifest and human-readable ledger deliverables are intentionally versioned.
 data/raw/cms_nhea/*
 !data/raw/cms_nhea/manifest.json
+data/raw/cms_payment_rules/*
+!data/raw/cms_payment_rules/manifest.json
 data/interim/
 data/processed/
 outputs/**/*.parquet
