@@ -1,0 +1,24 @@
+.DS_Store
+.venv/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+dist/
+*.duckdb
+.env
+.env.*
+!.env.example
+.direnv/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# CMS downloads and generated analytical stores remain local. The small source
+# manifest and human-readable ledger deliverables are intentionally versioned.
+data/raw/cms_nhea/*
+!data/raw/cms_nhea/manifest.json
+data/interim/
+data/processed/
+outputs/**/*.parquet
+outputs/**/*_cells.csv

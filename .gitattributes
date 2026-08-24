@@ -1,0 +1,7 @@
+data/raw/cms_nhea/* -text
+*.duckdb binary
+*.parquet binary
+*.pdf binary
+*.xls binary
+*.xlsx binary
+*.zip binary
