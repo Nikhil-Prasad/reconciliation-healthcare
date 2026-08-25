@@ -30,13 +30,18 @@ def test_rulebook_sources_exist_and_match_pinned_manifest() -> None:
         assert path.stat().st_size == record["bytes"]
         assert sha256_file(path) == record["sha256"]
         assert record["source_authority"] == "Centers for Medicare & Medicaid Services"
-        assert record["source_url"].startswith("https://www.cms.gov/")
+        assert record["source_url"].startswith(
+            ("https://www.cms.gov/", "https://www.govinfo.gov/")
+        )
         assert record["effective_start"] <= record["effective_end"]
         assert record["downloaded_at"]
         assert record["http_last_modified"]
     by_id = {record["source_artifact_id"]: record for record in records}
     for artifact_id, checksum in CORE_EXPECTED_HASHES.items():
         assert by_id[artifact_id]["sha256"] == checksum
+    cn2 = by_id["cms_ipps_fy2024_correction_notice_2"]
+    assert cn2["source_release"] == "CMS-1785-CN2 / 88 FR 77211"
+    assert cn2["source_url"].endswith("/FR-2023-11-09/pdf/2023-24670.pdf")
 
 
 def test_core_archives_have_expected_machine_readable_members() -> None:

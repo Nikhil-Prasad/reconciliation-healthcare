@@ -1,9 +1,10 @@
 # Authoritative sources
 
-Only first-party CMS files are executable inputs. The complete, machine-readable
-inventory is `data/raw/cms_payment_rules/manifest.json`; it currently pins 26
-artifacts by exact byte count and SHA-256. The downloader refuses to accept
-changed bytes at a previously pinned URL.
+Only first-party CMS and official Federal Register files are authoritative
+inputs. The complete, machine-readable inventory is
+`data/raw/cms_payment_rules/manifest.json`; it currently pins 32 artifacts by
+exact byte count and SHA-256. The downloader refuses to accept changed bytes at
+a previously pinned URL.
 
 ## PFS
 
@@ -31,11 +32,42 @@ effective-date interpretation.
 
 FY2024 sources are Tables 1A–1E, corrected Tables 2/3/4, and Table 5 on CMS's
 [FY2024 final/correction files page](https://www.cms.gov/medicare/payment/prospective-payment-systems/acute-inpatient-pps/acute-inpatient-files-download/files-fy-2024-final-rule-correction-notice).
+The CMS-1785-F final rule and both CMS-1785-CN correction notices are
+separately pinned from the official Federal Register publication so FY2024
+executable and deferred nodes can identify regulatory and supporting authority
+independently of numeric tables. CMS-1785-CN2 restored omitted explanatory text
+but did not change a Stage 2A numeric input.
 
 FY2025 sources are Tables 1A–1E, Tables 2/3/4, and corrected Table 5 on CMS's
 [FY2025 final-rule page](https://www.cms.gov/medicare/payment/prospective-payment-systems/acute-inpatient-pps/fy-2025-ipps-final-rule-home-page).
 The parser deliberately selects the FY2025 IFC Table 1 and Table 2 sheets and
-the correction-notice Table 5 sheet.
+the correction-notice Table 5 sheet. CMS-1808-F, CMS-1808-CN2, and
+CMS-1808-IFC are also pinned as separate Federal Register artifacts. This keeps
+the original annual rule, correction, and superseding wage/rate action distinct.
+
+## Entity provenance and validation roles
+
+The legacy source column on each canonical entity is a convenient direct
+pointer, normally to its primary numeric source. Complete provenance is stored
+as:
+
+```text
+entity → entity_source_links → source_artifact
+```
+
+Role labels distinguish numeric authority, regulation, implementation
+guidance, corrections, superseding releases, validation references, and
+supporting documentation. For example, the corrected Q1 `C9790` assignment
+links separately to the Q1 Addendum B, MM13568 retroactive-correction
+authority, and the Q2 Addendum B row supplying the corrected numeric fields.
+
+Validation results are labeled by evidence type. Direct parameter checks
+compare normalized cells with raw source cells. Structural checks validate
+keys, intervals, graph relationships, and provenance. PFS carrier-file cases
+are independent payment reproductions because carrier amounts are output
+references and are never engine inputs. The expanded IPPS cases independently
+exercise normalization and formula reconstruction from raw Tables 1/2/5; CMS
+does not provide a separate claim-payment output for those selected cases.
 
 ## Archival policy
 

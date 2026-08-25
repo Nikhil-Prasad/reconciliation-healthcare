@@ -53,3 +53,20 @@ Thus a 2024-09-30 discharge uses CMS-1785 values and a 2024-10-01 discharge
 uses CMS-1808 values. FY2025 selects the September 30 interim-final-action
 standardized amounts and wage tables after the low-wage-index policy was
 removed; using the original August final-rule values would be wrong.
+
+This boundary governs the entire IPPS graph, including the deferred IME, DSH,
+uncompensated-care, NTAP, outlier, HRRP, VBP, HAC, transfer, and final-payment
+rules. Each concept has two versioned nodes with complete fiscal-year
+intervals:
+
+| Boundary date | Active deferred namespace | Final-payment dependency |
+|---|---|---|
+| 2024-09-30 | `ipps.fy2024.*` | `ipps.fy2024.base_operating_payment` |
+| 2024-10-01 | `ipps.fy2025.*` | `ipps.fy2025.base_operating_payment` |
+
+Every outgoing final-payment edge remains within that same namespace and uses
+the full fiscal-year interval. FY2024 nodes link to the CMS-1785 regulatory
+authority and applicable FY2024 supporting artifacts; FY2025 nodes link to
+CMS-1808 and applicable FY2025 rule, correction, IFC, and table artifacts. A
+single CY2024 adjustment or final-payment node would combine two different
+annual rule authorities and is therefore not a valid temporal model.

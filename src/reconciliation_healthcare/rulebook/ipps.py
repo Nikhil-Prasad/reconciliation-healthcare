@@ -9,6 +9,7 @@ from typing import Any, Iterable, Mapping
 import pandas as pd
 
 from reconciliation_healthcare.rulebook.models import CalculationStatus, PaymentTrace
+from reconciliation_healthcare.rulebook.provenance import enrich_trace_sources
 from reconciliation_healthcare.rulebook.store import RulebookStore
 from reconciliation_healthcare.rulebook.temporal import as_date
 
@@ -341,7 +342,7 @@ def _state_code(
     return tail if len(tail) == 2 else normalized
 
 
-def calculate_ipps_base_payment(
+def _calculate_ipps_base_payment(
     store: RulebookStore,
     *,
     ms_drg: str | int,
@@ -614,6 +615,30 @@ def calculate_ipps_base_payment(
         warnings=["Base IPPS operating payment is not a final claim payment."],
         source_artifact_ids=source_ids,
     )
+
+
+def calculate_ipps_base_payment(
+    store: RulebookStore,
+    *,
+    ms_drg: str | int,
+    discharge_date: date | str,
+    provider_ccn: str | int,
+    quality_submitted: bool | None,
+    meaningful_ehr_user: bool | None,
+    provider_state: str | None = None,
+) -> PaymentTrace:
+    """Calculate the IPPS base trace and attach all linked source authorities."""
+
+    trace = _calculate_ipps_base_payment(
+        store,
+        ms_drg=ms_drg,
+        discharge_date=discharge_date,
+        provider_ccn=provider_ccn,
+        quality_submitted=quality_submitted,
+        meaningful_ehr_user=meaningful_ehr_user,
+        provider_state=provider_state,
+    )
+    return enrich_trace_sources(trace, store)
 
 
 __all__ = ["calculate_ipps_base_payment"]

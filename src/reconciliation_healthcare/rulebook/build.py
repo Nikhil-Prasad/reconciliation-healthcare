@@ -10,6 +10,7 @@ import pandas as pd
 from reconciliation_healthcare.paths import (
     CODE_ASSIGNMENTS_PATH,
     DUCKDB_PATH,
+    ENTITY_SOURCE_LINKS_PATH,
     PAYMENT_RULES_PATH,
     RULEBOOK_PROCESSED_DIR,
     RULE_CATALOG_CSV_PATH,
@@ -20,6 +21,7 @@ from reconciliation_healthcare.paths import (
 )
 from reconciliation_healthcare.rulebook.graph import build_rule_graph
 from reconciliation_healthcare.rulebook.normalize import normalize_sources
+from reconciliation_healthcare.rulebook.provenance import build_entity_source_links
 
 
 def _normalize_catalog_types(frame: pd.DataFrame) -> pd.DataFrame:
@@ -51,6 +53,12 @@ def build_rulebook() -> dict[str, int]:
     rules = _normalize_catalog_types(rules)
     edges = _normalize_catalog_types(edges)
     parameters, assignments, source_artifacts = normalize_sources()
+    entity_source_links = build_entity_source_links(
+        rules,
+        parameters,
+        assignments,
+        source_artifacts,
+    )
 
     tables = {
         "payment_rules": (rules, PAYMENT_RULES_PATH),
@@ -58,6 +66,7 @@ def build_rulebook() -> dict[str, int]:
         "rule_parameters": (parameters, RULE_PARAMETERS_PATH),
         "code_assignments": (assignments, CODE_ASSIGNMENTS_PATH),
         "source_artifacts": (source_artifacts, SOURCE_ARTIFACTS_PATH),
+        "entity_source_links": (entity_source_links, ENTITY_SOURCE_LINKS_PATH),
     }
     for frame, path in tables.values():
         frame.to_parquet(path, index=False)

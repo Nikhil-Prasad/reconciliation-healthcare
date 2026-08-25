@@ -58,6 +58,24 @@ class CalculationStatus(StrEnum):
     UNSUPPORTED = "unsupported"
 
 
+class EntityType(StrEnum):
+    RULE = "rule"
+    PARAMETER = "parameter"
+    ASSIGNMENT = "assignment"
+
+
+class SourceRole(StrEnum):
+    PRIMARY_NUMERIC_AUTHORITY = "primary_numeric_authority"
+    LEGAL_AUTHORITY = "legal_authority"
+    REGULATORY_AUTHORITY = "regulatory_authority"
+    IMPLEMENTATION_GUIDANCE = "implementation_guidance"
+    CORRECTION = "correction"
+    RETROACTIVE_CORRECTION = "retroactive_correction"
+    SUPERSEDING_RELEASE = "superseding_release"
+    VALIDATION_REFERENCE = "validation_reference"
+    SUPPORTING_DOCUMENTATION = "supporting_documentation"
+
+
 def _json_value(value: Any) -> Any:
     if isinstance(value, Decimal):
         return format(value, "f")
@@ -86,6 +104,7 @@ class PaymentTrace:
     unsupported_adjustments: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     source_artifact_ids: list[str] = field(default_factory=list)
+    source_links: list[dict[str, Any]] = field(default_factory=list)
     missing_rule: str | None = None
     missing_parameters: list[str] = field(default_factory=list)
 

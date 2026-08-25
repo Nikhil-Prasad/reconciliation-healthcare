@@ -188,12 +188,35 @@ CMS publishes one file set for
 and another for
 [March 9 through December 31](https://www.cms.gov/files/zip/cy-2024-carrier-files-effective-date-march-9-2024-december-31-2024-updated-04/02/2024.zip).
 
-The four `99213` Alabama/Manhattan facility/nonfacility results above match the
-corresponding carrier-file amounts exactly in both factor intervals. These
-files are validation outputs, not formula inputs, so the test does not compare
-the calculator with values derived from its own normalized result. Raw carrier
-and RVU archives remain local and checksummed because they contain licensed
-descriptions; public artifacts omit descriptions.
+The deterministic hardening matrix contains 40 cases. The code selector first
+intersects all five checksum-verified PPRRVU snapshots with both carrier files
+and all five selected localities. Eligible rows must have a blank modifier,
+status A, positive work/facility PE/nonfacility PE/malpractice RVUs, valid PE
+settings, and no code-level PC/TC, global-surgery, multiple-procedure,
+bilateral, assistant, co-surgery, team-surgery, endoscopic-base,
+diagnostic-supervision, imaging-family, or OPPS-cap branch. It then selects the
+stable SHA-256-ranked winner in each of four predeclared numeric bands without
+using or publishing licensed descriptions. The resulting codes are `80503`,
+`86077`, `90961`, and `99305`; tests pin that result so a source change is
+reviewable rather than silently changing the fixture.
+
+The matrix covers localities `AK:01`, `AL:00`, `CA:05`, `NY:01`, and
+`TX:09`; both facility and nonfacility settings; and eight cases from each
+RVU24A, RVU24AR, RVU24B, RVU24C, and RVU24D engine-effective period. Expected
+amounts are parsed at test time from the checksum-verified carrier archives
+rather than copied into source code. All 40 match exactly to cents.
+
+The carrier files are published payment outputs, not formula inputs, so these
+are independent payment reproductions rather than a comparison with values
+derived from the engine's own normalized result. Raw carrier and RVU archives
+remain local and checksummed because they contain licensed descriptions;
+public artifacts omit descriptions.
+
+CMS publishes two carrier effective ranges, not five quarterly carrier
+releases. The March 9–December 31 file supports the RVU24AR, RVU24B, RVU24C,
+and RVU24D engine dates for these unchanged eligible rows. The matrix therefore
+tests date resolution and source normalization in all five engine periods, but
+does not claim an independent carrier check of quarter-specific changed rows.
 
 ## Explicit exclusions
 

@@ -504,59 +504,87 @@ def build_rule_graph() -> tuple[pd.DataFrame, pd.DataFrame]:
             edges.append(_edge(base, "depends_on", f"{prefix}.{dependency}", start, end))
 
     ipps_adjustments = (
-        ("ipps.ime", "Indirect medical education", RuleType.ADD_ON, PolicyFunction.TEACHING_SUBSIDY),
-        ("ipps.dsh", "Disproportionate share hospital", RuleType.ADD_ON, PolicyFunction.SAFETY_NET),
+        ("ime", "Indirect medical education", RuleType.ADD_ON, PolicyFunction.TEACHING_SUBSIDY),
+        ("dsh", "Disproportionate share hospital", RuleType.ADD_ON, PolicyFunction.SAFETY_NET),
         (
-            "ipps.uncompensated_care",
+            "uncompensated_care",
             "Uncompensated care payment",
             RuleType.ADD_ON,
             PolicyFunction.UNCOMPENSATED_CARE,
         ),
-        ("ipps.ntap", "New technology add-on payment", RuleType.ADD_ON, PolicyFunction.INNOVATION_SUBSIDY),
-        ("ipps.outlier", "High-cost outlier", RuleType.OUTLIER, PolicyFunction.RISK_ADJUSTMENT),
-        ("ipps.hrrp", "Hospital Readmissions Reduction Program", RuleType.QUALITY_ADJUSTMENT, PolicyFunction.QUALITY_INCENTIVE),
-        ("ipps.vbp", "Hospital Value-Based Purchasing", RuleType.QUALITY_ADJUSTMENT, PolicyFunction.QUALITY_INCENTIVE),
-        ("ipps.hac", "Hospital-Acquired Condition Reduction Program", RuleType.QUALITY_ADJUSTMENT, PolicyFunction.QUALITY_INCENTIVE),
-        ("ipps.transfer", "Post-acute and short-stay transfer policy", RuleType.REDUCTION, PolicyFunction.UTILIZATION_CONTROL),
-        ("ipps.final_payment", "Final IPPS claim payment", RuleType.BASE_RATE, PolicyFunction.RESOURCE_PRICING),
+        (
+            "ntap",
+            "New technology add-on payment",
+            RuleType.ADD_ON,
+            PolicyFunction.INNOVATION_SUBSIDY,
+        ),
+        ("outlier", "High-cost outlier", RuleType.OUTLIER, PolicyFunction.RISK_ADJUSTMENT),
+        (
+            "hrrp",
+            "Hospital Readmissions Reduction Program",
+            RuleType.QUALITY_ADJUSTMENT,
+            PolicyFunction.QUALITY_INCENTIVE,
+        ),
+        (
+            "vbp",
+            "Hospital Value-Based Purchasing",
+            RuleType.QUALITY_ADJUSTMENT,
+            PolicyFunction.QUALITY_INCENTIVE,
+        ),
+        (
+            "hac",
+            "Hospital-Acquired Condition Reduction Program",
+            RuleType.QUALITY_ADJUSTMENT,
+            PolicyFunction.QUALITY_INCENTIVE,
+        ),
+        (
+            "transfer",
+            "Post-acute and short-stay transfer policy",
+            RuleType.REDUCTION,
+            PolicyFunction.UTILIZATION_CONTROL,
+        ),
+        (
+            "final_payment",
+            "Final IPPS claim payment",
+            RuleType.BASE_RATE,
+            PolicyFunction.RESOURCE_PRICING,
+        ),
     )
-    for rule_id, name, rule_type, policy in ipps_adjustments:
-        rules.append(
-            _rule(
-                rule_id,
-                "IPPS",
-                name,
-                "CY2024 coverage",
-                "2024-01-01",
-                "2024-12-31",
-                rule_type,
-                policy,
-                "inpatient discharge or provider",
-                "Applicable claim/provider conditions",
-                "Provider-specific and claim-level context outside Stage 2A",
-                "Adjustment or final payment",
-                ExecutionStatus.DEFERRED,
-                ipps_legal,
-                "42 CFR Part 412; FY2024/FY2025 IPPS annual rules",
-                "cms_ipps_fy2024_table1",
-                "Annual rule and supporting tables",
+    additive_adjustments = ("ime", "dsh", "uncompensated_care", "ntap", "outlier")
+    multiplicative_adjustments = ("hrrp", "vbp", "hac", "transfer")
+    for version, start, end, table1, _wage, _table5, regulatory in ipps_sources:
+        prefix = f"ipps.{version}"
+        for suffix, name, rule_type, policy in ipps_adjustments:
+            rules.append(
+                _rule(
+                    f"{prefix}.{suffix}",
+                    "IPPS",
+                    name,
+                    version.upper(),
+                    start,
+                    end,
+                    rule_type,
+                    policy,
+                    "inpatient discharge or provider",
+                    "Applicable claim/provider conditions",
+                    "Provider-specific and claim-level context outside Stage 2A",
+                    "Adjustment or final payment",
+                    ExecutionStatus.DEFERRED,
+                    ipps_legal,
+                    regulatory,
+                    table1,
+                    "Annual rule and supporting tables",
+                )
             )
-        )
-    for version, start, end, *_ in ipps_sources:
-        base = f"ipps.{version}.base_operating_payment"
+
+        final_payment = f"{prefix}.final_payment"
         edges.append(
-            _edge(
-                "ipps.final_payment",
-                "depends_on",
-                base,
-                max(start, "2024-01-01"),
-                min(end, "2024-12-31"),
-            )
+            _edge(final_payment, "depends_on", f"{prefix}.base_operating_payment", start, end)
         )
-    for target in ("ipps.ime", "ipps.dsh", "ipps.uncompensated_care", "ipps.ntap", "ipps.outlier"):
-        edges.append(_edge("ipps.final_payment", "may_add", target, "2024-01-01", "2024-12-31"))
-    for target in ("ipps.hrrp", "ipps.vbp", "ipps.hac", "ipps.transfer"):
-        edges.append(_edge("ipps.final_payment", "may_apply", target, "2024-01-01", "2024-12-31"))
+        for suffix in additive_adjustments:
+            edges.append(_edge(final_payment, "may_add", f"{prefix}.{suffix}", start, end))
+        for suffix in multiplicative_adjustments:
+            edges.append(_edge(final_payment, "may_apply", f"{prefix}.{suffix}", start, end))
 
     rules.extend(
         [

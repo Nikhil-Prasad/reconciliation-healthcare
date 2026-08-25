@@ -85,6 +85,12 @@ the April Addendum B into the January record and marks it
 `published_retroactive_correction`. Thus a first-quarter lookup returns APC
 `1576` and the corrected published national unadjusted rate.
 
+The Q1 assignment has three explicit `entity_source_links`: the original Q1
+Addendum B as supporting documentation, MM13568 as the
+`retroactive_correction`, and the Q2 Addendum B as the
+`primary_numeric_authority` for the replacement APC/rate. A trace returns all
+three artifacts and their roles without parsing the prose locator.
+
 This is the only retroactive OPPS row correction made executable in Stage 2A.
 The January, April, revised July, and October update memoranda are pinned, but
 their other heterogeneous row-effective exceptions have not all been normalized.

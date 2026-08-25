@@ -12,6 +12,7 @@
   "selected_rule_versions": [],
   "selected_parameters": [
     {
+      "assignment_id": "pfs.rvu24a.01951.blank",
       "parameter_id": "pfs.rvu24a.01951.blank",
       "rule_id": "pfs.rvu24a.base_payment",
       "parameter_name": "code_assignment",
@@ -35,6 +36,17 @@
   "warnings": [],
   "source_artifact_ids": [
     "cms_pfs_rvu24a"
+  ],
+  "source_links": [
+    {
+      "entity_type": "assignment",
+      "entity_id": "pfs.rvu24a.01951.blank",
+      "source_artifact_id": "cms_pfs_rvu24a",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "PPRRVU24_JAN.csv row 6068",
+      "effective_start": "2024-01-01",
+      "effective_end": "2024-03-08"
+    }
   ],
   "missing_rule": "pfs.anesthesia",
   "missing_parameters": []

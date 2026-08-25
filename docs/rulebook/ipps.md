@@ -58,6 +58,16 @@ Therefore, a September 30, 2024 discharge resolves to CMS-1785 and an October
 fiscal years, a gap, or an overlap returns `UNSUPPORTED`; the engine does not
 choose the nearest version.
 
+The rule graph uses the same fiscal-year boundary for deferred policy nodes.
+Each adjustment and final-payment concept has an `ipps.fy2024.<mechanism>` and
+an `ipps.fy2025.<mechanism>` rule covering the complete applicable fiscal year.
+For example, `ipps.fy2024.final_payment` is effective through September 30 and
+depends only on FY2024 nodes; `ipps.fy2025.final_payment` begins October 1 and
+depends only on FY2025 nodes. FY2024 nodes link to CMS-1785-F and applicable
+FY2024 tables/corrections, while FY2025 nodes link to CMS-1808-F and applicable
+FY2025 tables, correction, and IFC. There is no calendar-year wrapper that
+crosses the fiscal-year boundary.
+
 ## Final-rule and correction precedence
 
 ### FY2024
@@ -205,12 +215,33 @@ The October change reflects the complete authoritative FY switch: IFC
 standardized amounts and provider wage index plus the corrected FY2025 MS-DRG
 weight. It is not a statement about hospital cost, adequacy, or overpayment.
 
+## Expanded raw-table validation
+
+Eight deterministic base-payment cases cross MS-DRGs `039` and `470`, low-wage
+CBSA `20020` and high-wage CBSA `41884`, FY2024 and FY2025, and the 62% and
+67.6% labor-share branches. Expected weights, wage indexes, standardized
+amounts, intermediate components, nine-decimal values, and cents are rebuilt
+directly from checksum-verified raw Tables 1, 2, and 5 and compared with the
+engine.
+
+This is independent normalization and formula reconstruction, but not an
+independent published claim-payment comparison: the selected CMS tables are
+the underlying parameter authorities, and CMS does not publish separate final
+claim amounts for these fixtures. The PFS carrier matrix provides that stronger
+published-output comparison for the professional path.
+
 ## Base operating payment is not final payment
 
 The returned amount prices the ordinary wage-adjusted MS-DRG resource component
 only. A calculated trace always warns that it is not a final claim and lists
 the omitted mechanisms. The rule graph separates each mechanism by policy
 function rather than treating every dollar as the price of medical production:
+
+The deferred nodes in the table below are versioned independently for FY2024
+and FY2025. Their graph edges run from the matching fiscal year's
+`final_payment` node over the full fiscal-year interval; a deferred status does
+not justify attaching an adjustment from one fiscal year's authority to the
+other fiscal year's base payment.
 
 | Mechanism | Policy function | Stage 2A status | Why it is separate or deferred |
 |---|---|---|---|

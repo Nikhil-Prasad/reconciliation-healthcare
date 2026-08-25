@@ -73,6 +73,7 @@
   ],
   "selected_parameters": [
     {
+      "assignment_id": "pfs.rvu24ar.99213.blank",
       "parameter_id": "pfs.rvu24ar.99213.blank",
       "rule_id": "pfs.rvu24ar.base_payment",
       "parameter_name": "code_assignment",
@@ -170,7 +171,118 @@
     "The calculated amount is the core PFS base amount, not final claim adjudication."
   ],
   "source_artifact_ids": [
-    "cms_pfs_rvu24ar"
+    "cms_pfs_rvu24ar",
+    "cms_pfs_carrier_2024_mar9_dec31"
+  ],
+  "source_links": [
+    {
+      "entity_type": "assignment",
+      "entity_id": "pfs.rvu24ar.99213.blank",
+      "source_artifact_id": "cms_pfs_rvu24ar",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "PPRRVU24_JAN.csv row 18342",
+      "effective_start": "2024-03-09",
+      "effective_end": "2024-03-31"
+    },
+    {
+      "entity_type": "parameter",
+      "entity_id": "pfs.rvu24ar.AL:00.mp_gpci",
+      "source_artifact_id": "cms_pfs_rvu24ar",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "GPCI2024.csv row 4, column 2024 MP GPCI",
+      "effective_start": "2024-03-09",
+      "effective_end": "2024-03-31"
+    },
+    {
+      "entity_type": "parameter",
+      "entity_id": "pfs.rvu24ar.AL:00.pe_gpci",
+      "source_artifact_id": "cms_pfs_rvu24ar",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "GPCI2024.csv row 4, column 2024 PE GPCI",
+      "effective_start": "2024-03-09",
+      "effective_end": "2024-03-31"
+    },
+    {
+      "entity_type": "parameter",
+      "entity_id": "pfs.rvu24ar.AL:00.work_gpci",
+      "source_artifact_id": "cms_pfs_rvu24ar",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "GPCI2024.csv row 4, column 2024 PW GPCI",
+      "effective_start": "2024-03-09",
+      "effective_end": "2024-03-31"
+    },
+    {
+      "entity_type": "parameter",
+      "entity_id": "pfs.rvu24ar.conversion_factor",
+      "source_artifact_id": "cms_pfs_rvu24ar",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "PPRRVU24_JAN.csv Conversion Factor column; active-code value",
+      "effective_start": "2024-03-09",
+      "effective_end": "2024-03-31"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "pfs.rvu24ar.base_payment",
+      "source_artifact_id": "cms_pfs_rvu24ar",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "RVU release documentation formula and numeric CSV members",
+      "effective_start": "2024-03-09",
+      "effective_end": "2024-03-31"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "pfs.rvu24ar.base_payment",
+      "source_artifact_id": "cms_pfs_carrier_2024_mar9_dec31",
+      "source_role": "validation_reference",
+      "source_locator": "CMS all-states carrier payment file",
+      "effective_start": "2024-03-09",
+      "effective_end": "2024-03-31"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "pfs.rvu24ar.conversion_factor",
+      "source_artifact_id": "cms_pfs_rvu24ar",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "PPRRVU and GPCI CSV members",
+      "effective_start": "2024-03-09",
+      "effective_end": "2024-03-31"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "pfs.rvu24ar.gpci",
+      "source_artifact_id": "cms_pfs_rvu24ar",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "PPRRVU and GPCI CSV members",
+      "effective_start": "2024-03-09",
+      "effective_end": "2024-03-31"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "pfs.rvu24ar.malpractice_rvu",
+      "source_artifact_id": "cms_pfs_rvu24ar",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "PPRRVU and GPCI CSV members",
+      "effective_start": "2024-03-09",
+      "effective_end": "2024-03-31"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "pfs.rvu24ar.practice_expense_rvu",
+      "source_artifact_id": "cms_pfs_rvu24ar",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "PPRRVU and GPCI CSV members",
+      "effective_start": "2024-03-09",
+      "effective_end": "2024-03-31"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "pfs.rvu24ar.work_rvu",
+      "source_artifact_id": "cms_pfs_rvu24ar",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "PPRRVU and GPCI CSV members",
+      "effective_start": "2024-03-09",
+      "effective_end": "2024-03-31"
+    }
   ],
   "missing_rule": null,
   "missing_parameters": []

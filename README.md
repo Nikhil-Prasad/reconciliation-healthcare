@@ -76,7 +76,8 @@ fraud, or policy classifications are introduced.
 
 - `data/processed/rulebook/payment_rules.parquet`, `rule_edges.parquet`,
   `rule_parameters.parquet`, `code_assignments.parquet`, and
-  `source_artifacts.parquet` — canonical portable rulebook tables.
+  `source_artifacts.parquet`, plus `entity_source_links.parquet` — canonical
+  portable rulebook tables with many-to-many provenance.
 - `outputs/rulebook_2024/rule_catalog.csv` and `rule_edges.csv` — small,
   reviewable catalog deliverables.
 - `outputs/rulebook_2024/example_traces/` — PFS, OPPS, IPPS, and fail-closed

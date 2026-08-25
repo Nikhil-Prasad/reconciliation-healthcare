@@ -1,6 +1,6 @@
 # Rulebook ontology
 
-Portable Parquet is canonical. The same five tables are loaded into the
+Portable Parquet is canonical. The same six tables are loaded into the
 existing `data/processed/healthcare.duckdb`, alongside the Stage 1 tables.
 
 ## `payment_rules`
@@ -18,8 +18,15 @@ unique and traces select it directly. Controlled dimensions are:
 - `execution_status`: `executable`, `lookup_only`, `documented_only`, or
   `deferred`.
 
-`legal_authority`, `regulatory_authority`, `source_artifact_id`, and
-`source_locator` keep the authority chain separate from executable code.
+`deferred` means that the rule is recognized, versioned over its truthful
+effective period, and provenance-backed, but is not executable. It is not a
+calendar-neutral placeholder.
+
+`legal_authority` and `regulatory_authority` keep policy authority separate
+from executable code. The retained `source_artifact_id` and `source_locator`
+columns are convenient direct pointers (normally the primary numeric source);
+the authoritative relationship is the many-to-many link table described
+below.
 
 ## `rule_edges`
 
@@ -57,10 +64,35 @@ landing page and download URL, download and HTTP metadata, release, inclusive
 effective interval, SHA-256, byte count, and description. Raw bytes stay local
 and are excluded from Git.
 
+## `entity_source_links`
+
+This table is the authoritative provenance relationship:
+
+```text
+rule / parameter / assignment
+    → entity_source_links
+    → source_artifacts
+```
+
+Every canonical rule, parameter, and assignment has at least one link. The
+controlled `entity_type` values are `rule`, `parameter`, and `assignment`.
+`source_role` distinguishes `primary_numeric_authority`, `legal_authority`,
+`regulatory_authority`, `implementation_guidance`, `correction`,
+`retroactive_correction`, `superseding_release`, `validation_reference`, and
+`supporting_documentation`. Link intervals describe the entity value for which
+the relationship applies. Natural-key and source-link duplicates are rejected.
+
+This design permits a corrected value to retain its original snapshot, numeric
+replacement, and correction authority as separate queryable relationships
+rather than packing several identifiers into one string.
+
 ## Traces
 
 Every supported result is a `PaymentTrace` with inputs, service date, selected
 rule versions, selected parameter/assignment identifiers, components, a
 precisely labeled amount (if any), omitted adjustments, warnings, and source
-artifact identifiers. `UNSUPPORTED` traces have no calculated amount and state
-the missing or unsupported rule explicitly.
+artifact identifiers. `source_links` exposes the compact, role-labeled,
+service-date-active relationships used to construct the complete deduplicated
+`source_artifact_ids` set. A canonical store fails rather than emit a supported
+trace whose selected entity lacks an active link. `UNSUPPORTED` traces have no
+calculated amount and state the missing or unsupported rule explicitly.

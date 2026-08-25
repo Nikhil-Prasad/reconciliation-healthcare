@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import csv
-import io
 import json
-import zipfile
 from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
@@ -24,12 +21,19 @@ from reconciliation_healthcare.paths import (
 from reconciliation_healthcare.rulebook.ipps import calculate_ipps_base_payment
 from reconciliation_healthcare.rulebook.models import (
     CalculationStatus,
+    EntityType,
     ExecutionStatus,
     PolicyFunction,
     RuleType,
+    SourceRole,
 )
 from reconciliation_healthcare.rulebook.opps import lookup_opps
 from reconciliation_healthcare.rulebook.pfs import calculate_pfs
+from reconciliation_healthcare.rulebook.provenance import validate_entity_source_links
+from reconciliation_healthcare.rulebook.reference_validation import (
+    validate_ipps_references,
+    validate_pfs_carrier_references,
+)
 from reconciliation_healthcare.rulebook.sources import SOURCES, sha256_file
 from reconciliation_healthcare.rulebook.store import RulebookStore
 from reconciliation_healthcare.rulebook.temporal import validate_contiguous_intervals
@@ -63,7 +67,10 @@ def _source_integrity() -> str:
         assert path.is_file(), path
         assert path.stat().st_size == record["bytes"], path
         assert sha256_file(path) == record["sha256"], path
-    return f"{len(records)} CMS artifacts exist and match pinned byte counts/SHA-256 values."
+    return (
+        f"{len(records)} official first-party artifacts exist and match pinned "
+        "byte counts/SHA-256 values."
+    )
 
 
 def _source_families() -> str:
@@ -87,6 +94,11 @@ def _source_families() -> str:
         "cms_ipps_fy2025_table1",
         "cms_ipps_fy2025_wage_tables",
         "cms_ipps_fy2025_table5",
+        "cms_ipps_fy2024_final_rule",
+        "cms_ipps_fy2024_correction_notice",
+        "cms_ipps_fy2025_final_rule",
+        "cms_ipps_fy2025_correction_notice",
+        "cms_ipps_fy2025_ifc",
     }
     assert required <= ids
     return "PFS, quarterly OPPS, FY2024 IPPS, and FY2025 IPPS core families are pinned."
@@ -101,6 +113,7 @@ def _keys_and_foreign_keys(store: RulebookStore) -> str:
     assert params["parameter_id"].is_unique
     assert assignments["assignment_id"].is_unique
     assert artifacts["source_artifact_id"].is_unique
+    assert store.entity_source_links["source_link_id"].is_unique
     rule_ids = set(rules["rule_id"])
     artifact_ids = set(artifacts["source_artifact_id"])
     assert set(params["rule_id"]) <= rule_ids
@@ -111,6 +124,35 @@ def _keys_and_foreign_keys(store: RulebookStore) -> str:
     return (
         f"Unique keys and rule/source foreign keys pass across {len(rules):,} rules, "
         f"{len(params):,} parameters, and {len(assignments):,} assignments."
+    )
+
+
+def _entity_source_provenance(store: RulebookStore) -> str:
+    links = store.entity_source_links
+    validate_entity_source_links(
+        links,
+        payment_rules=store.payment_rules,
+        rule_parameters=store.rule_parameters,
+        code_assignments=store.code_assignments,
+        source_artifacts=store.source_artifacts,
+    )
+    assert set(links["entity_type"]) == {item.value for item in EntityType}
+    assert set(links["source_role"]) <= {item.value for item in SourceRole}
+    c9790 = links[
+        (links["entity_type"] == EntityType.ASSIGNMENT.value)
+        & (links["entity_id"] == "opps.2024_q1.C9790")
+    ]
+    assert {
+        ("cms_opps_2024_q1_addendum_b", SourceRole.SUPPORTING_DOCUMENTATION.value),
+        ("cms_opps_2024_april_update", SourceRole.RETROACTIVE_CORRECTION.value),
+        ("cms_opps_2024_q2_addendum_b", SourceRole.PRIMARY_NUMERIC_AUTHORITY.value),
+    } <= set(zip(c9790["source_artifact_id"], c9790["source_role"], strict=True))
+    linked_counts = links.groupby(["entity_type", "entity_id"]).size()
+    multi_source = int(linked_counts.gt(1).sum())
+    return (
+        f"{len(links):,} valid entity-to-source links cover every canonical entity; "
+        f"{multi_source:,} entities have multiple authoritative sources, including the "
+        "three-artifact C9790 correction path."
     )
 
 
@@ -188,64 +230,25 @@ def _parameter_values(store: RulebookStore) -> str:
     return f"{len(expected_parameters) + len(expected_assignments)} direct CMS parameter cells/rows match."
 
 
-def _carrier_amount(
-    artifact_id: str,
-    *,
-    member: str,
-    carrier: str,
-    locality: str,
-    code: str,
-) -> tuple[Decimal, Decimal]:
-    by_id = {record["source_artifact_id"]: record for record in _manifest()["records"]}
-    path = RULEBOOK_RAW_DIR / by_id[artifact_id]["relative_path"]
-    with zipfile.ZipFile(path) as archive:
-        rows = csv.reader(io.TextIOWrapper(archive.open(member), encoding="ascii"))
-        matches = [
-            row
-            for row in rows
-            if len(row) >= 7
-            and row[1].strip() == carrier
-            and row[2].strip() == locality
-            and row[3].strip() == code
-            and not row[4].strip()
-        ]
-    assert len(matches) == 1
-    return Decimal(matches[0][5]), Decimal(matches[0][6])
-
-
 def _pfs_formula_and_independent_reference(store: RulebookStore) -> str:
-    fixtures = (
-        (
-            "cms_pfs_carrier_2024_jan_mar8",
-            "2024-01-15",
-            Decimal("82.30"),
-            Decimal("60.38"),
-        ),
-        (
-            "cms_pfs_carrier_2024_mar9_dec31",
-            "2024-03-09",
-            Decimal("83.66"),
-            Decimal("61.39"),
-        ),
+    summary = validate_pfs_carrier_references(store)
+    return (
+        f"{summary.matched_cases} independent CMS carrier-payment amounts reproduce exactly "
+        f"to cents across {len(summary.codes)} codes, {len(summary.geographies)} localities, "
+        f"{len(summary.periods)} engine-effective periods, and both settings, backed by "
+        f"{len(summary.source_artifact_ids)} carrier effective ranges."
     )
-    for artifact_id, service_date, expected_nf, expected_f in fixtures:
-        carrier_nf, carrier_f = _carrier_amount(
-            artifact_id,
-            member="PFAL24A.TXT",
-            carrier="10112",
-            locality="00",
-            code="99213",
-        )
-        assert (carrier_nf, carrier_f) == (expected_nf, expected_f)
-        nonfacility = calculate_pfs(
-            "99213", service_date, "AL:00", "nonfacility", store
-        )
-        facility = calculate_pfs("99213", service_date, "AL:00", "facility", store)
-        assert nonfacility.calculated_amount == carrier_nf
-        assert facility.calculated_amount == carrier_f
-        validate_trace(nonfacility)
-        validate_trace(facility)
-    return "Four PFS amounts reproduce independent CMS Alabama carrier-file values exactly to cents."
+
+
+def _expanded_ipps_raw_reconstruction(store: RulebookStore) -> str:
+    summary = validate_ipps_references(store)
+    return (
+        f"{summary.matched_cases} base-payment cases reconstruct directly from pinned raw CMS "
+        f"Tables 1/2/5 across {len(summary.codes)} MS-DRGs, "
+        f"{len(summary.geographies)} geographies, both fiscal years, and labor-share branches "
+        f"{', '.join(summary.labor_share_branches)}%. These are independent normalization/formula "
+        "checks, not independently published claim amounts."
+    )
 
 
 def _opps_lookups(store: RulebookStore) -> str:
@@ -321,7 +324,14 @@ def _trace_foreign_keys(store: RulebookStore) -> str:
     }
     assert selected_ids <= parameter_ids | assignment_ids
     assert set(trace.source_artifact_ids) <= artifact_ids
-    return "Executed trace rule, parameter/assignment, and artifact identifiers resolve to canonical tables."
+    assert trace.source_links
+    assert {link["source_artifact_id"] for link in trace.source_links} == set(
+        trace.source_artifact_ids
+    )
+    return (
+        "Executed trace rule, parameter/assignment, linked-source, and artifact identifiers "
+        "resolve to canonical tables."
+    )
 
 
 def _duckdb_integration(store: RulebookStore) -> str:
@@ -330,6 +340,7 @@ def _duckdb_integration(store: RulebookStore) -> str:
         "rule_parameters": len(store.rule_parameters),
         "code_assignments": len(store.code_assignments),
         "source_artifacts": len(store.source_artifacts),
+        "entity_source_links": len(store.entity_source_links),
     }
     with duckdb.connect(str(DUCKDB_PATH), read_only=True) as connection:
         observed_tables = {
@@ -357,12 +368,14 @@ def validation_checks(store: RulebookStore) -> list[ValidationCheck]:
         ("Source integrity", _source_integrity),
         ("Source family coverage", _source_families),
         ("Primary/foreign keys", lambda: _keys_and_foreign_keys(store)),
+        ("Many-to-many source provenance", lambda: _entity_source_provenance(store)),
         ("Controlled vocabularies", lambda: _controlled_vocabularies(store)),
         ("Temporal coverage", _temporal_coverage),
         ("Direct parameter checks", lambda: _parameter_values(store)),
         ("PFS independent formula validation", lambda: _pfs_formula_and_independent_reference(store)),
         ("OPPS lookup validation", lambda: _opps_lookups(store)),
         ("IPPS formula/boundary validation", lambda: _ipps_formula(store)),
+        ("Expanded IPPS raw-table reconstruction", lambda: _expanded_ipps_raw_reconstruction(store)),
         ("Fail-closed behavior", lambda: _fail_closed(store)),
         ("Trace foreign keys", lambda: _trace_foreign_keys(store)),
         ("Integrated DuckDB", lambda: _duckdb_integration(store)),
@@ -417,8 +430,15 @@ def _write_report(checks: list[ValidationCheck], store: RulebookStore) -> None:
         .size()
         .to_dict()
     )
+    source_role_counts = {
+        role.value: int(store.entity_source_links["source_role"].eq(role.value).sum())
+        for role in SourceRole
+    }
+    source_link_counts = store.entity_source_links.groupby(
+        ["entity_type", "entity_id"]
+    ).size()
     lines = [
-        "# Stage 2A validation report",
+        "# Stage 2A.1 validation report",
         "",
         f"**Result: {passed}/{len(checks)} checks passed.**",
         "",
@@ -437,6 +457,12 @@ def _write_report(checks: list[ValidationCheck], store: RulebookStore) -> None:
             f"- Rule parameters: {len(store.rule_parameters):,}",
             f"- Code assignments: {len(store.code_assignments):,}",
             f"- Source artifacts: {len(store.source_artifacts):,}",
+            f"- Entity-source links: {len(store.entity_source_links):,}",
+            f"- Entities with multiple linked sources: {int(source_link_counts.gt(1).sum()):,}",
+            "- Source roles: "
+            + ", ".join(
+                f"{key}={value}" for key, value in sorted(source_role_counts.items())
+            ),
             "- Rule execution statuses: "
             + ", ".join(f"{key}={value}" for key, value in sorted(status_counts.items())),
             "",
@@ -452,9 +478,12 @@ def _write_report(checks: list[ValidationCheck], store: RulebookStore) -> None:
             "",
             "## Interpretation",
             "",
-            "The PFS and IPPS checks validate labeled base amounts, not final claims. The OPPS "
-            "checks validate published national unadjusted lookup values and packaging context. "
-            "Provider/claim adjustments listed in each trace remain outside Stage 2A.",
+            "PFS carrier cases independently reproduce published payment outputs. IPPS raw-table "
+            "cases independently test normalization and formula reconstruction, but are not "
+            "separate published claim-payment comparisons. Direct parameter checks and structural "
+            "checks are labeled separately above. All PFS/IPPS amounts remain base amounts rather "
+            "than final claims; OPPS remains a published national unadjusted lookup. Provider/claim "
+            "adjustments listed in each trace remain outside Stage 2A.",
             "",
         ]
     )

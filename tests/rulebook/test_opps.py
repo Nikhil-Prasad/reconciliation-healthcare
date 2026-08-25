@@ -88,6 +88,19 @@ def opps_store() -> RulebookStore:
             }
         )
         artifacts.append({"source_artifact_id": artifact})
+    rules.extend(
+        {
+            "rule_id": rule_id,
+            "payment_system": "OPPS",
+            "rule_version": "CY2024",
+            "effective_start": "2024-01-01",
+            "effective_end": "2024-12-31",
+            "execution_status": "documented_only",
+            "source_artifact_id": "cms_opps_2024_final_addenda",
+        }
+        for rule_id in ("opps.packaging", "opps.comprehensive_apc")
+    )
+    artifacts.append({"source_artifact_id": "cms_opps_2024_final_addenda"})
     return RulebookStore(
         payment_rules=pd.DataFrame(rules),
         rule_parameters=pd.DataFrame(),
@@ -116,7 +129,10 @@ def test_stable_separately_paid_visit_returns_published_lookup(
     assert trace.amount_label == (
         "published national unadjusted OPPS payment rate (not final claim payment)"
     )
-    assert trace.source_artifact_ids == ["cms_opps_2024_q1_addendum_b"]
+    assert trace.source_artifact_ids == [
+        "cms_opps_2024_q1_addendum_b",
+        "cms_opps_2024_final_addenda",
+    ]
     validate_trace(trace)
 
 
@@ -130,6 +146,9 @@ def test_packaged_service_exposes_no_separate_rate(opps_store: RulebookStore) ->
     assert trace.calculated_amount is None
     assert trace.components["claim_context_required"] is True
     assert "no separate APC payment" in trace.components["packaging_rule"]
+    assert {rule["rule_id"] for rule in trace.selected_rule_versions} >= {
+        "opps.packaging"
+    }
     assert any("claim context" in warning.lower() for warning in trace.warnings)
     validate_trace(trace)
 
@@ -143,6 +162,10 @@ def test_j1_returns_apc_base_but_requires_full_claim(opps_store: RulebookStore) 
     assert trace.calculated_amount == Decimal("10481.81")
     assert trace.components["claim_context_required"] is True
     assert "Comprehensive APC" in trace.components["packaging_rule"]
+    assert {rule["rule_id"] for rule in trace.selected_rule_versions} >= {
+        "opps.packaging",
+        "opps.comprehensive_apc",
+    }
     assert any("complete claim" in warning for warning in trace.warnings)
     assert "not final claim payment" in trace.amount_label
     validate_trace(trace)

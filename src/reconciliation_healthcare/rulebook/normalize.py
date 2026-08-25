@@ -414,7 +414,9 @@ def _mark_opps_effective_date_uncertainty(
 
     # MM13568 corrected this Q1 assignment retroactive to 2024-01-01. CMS's
     # April Addendum B carries the corrected APC/rate, so copy only those public
-    # numeric fields and point provenance to both official artifacts.
+    # numeric fields.  The retained convenience pointer follows the corrected
+    # numeric row; entity_source_links separately preserves the original Q1
+    # snapshot and the MM13568 correction authority.
     q1 = next(rows for rows in snapshots if rows[0]["assignment_id"].startswith("opps.2024_q1"))
     q2 = next(rows for rows in snapshots if rows[0]["assignment_id"].startswith("opps.2024_q2"))
     q1_by_code = {row["code"]: row for row in q1}
@@ -422,14 +424,22 @@ def _mark_opps_effective_date_uncertainty(
     if "C9790" in q1_by_code and "C9790" in q2_by_code:
         target = q1_by_code["C9790"]
         corrected = q2_by_code["C9790"]
+        uncertainty_suffix = (
+            "; changed quarterly row without a normalized code-specific update date"
+        )
+        corrected["source_locator"] = corrected["source_locator"].removesuffix(
+            uncertainty_suffix
+        )
+        corrected["value_status"] = "published_quarter_snapshot"
         for column in ("status_indicator", "apc", "relative_weight", "payment_rate"):
             target[column] = corrected[column]
         target["value_status"] = "published_retroactive_correction"
+        original_locator = target["source_locator"]
+        target["source_artifact_id"] = corrected["source_artifact_id"]
         target["source_locator"] = (
-            f"{target['source_locator']}; MM13568 retroactive correction effective 2024-01-01; "
-            f"corrected numeric fields confirmed at {corrected['source_locator']}"
+            f"{corrected['source_locator']}; corrected Q1 value originally published at "
+            f"{original_locator}; MM13568 retroactive correction effective 2024-01-01"
         )
-        corrected["value_status"] = "published_quarter_snapshot"
 
 
 def normalize_opps(

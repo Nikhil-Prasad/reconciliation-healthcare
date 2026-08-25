@@ -38,6 +38,7 @@ RULE_EDGES_PATH = RULEBOOK_PROCESSED_DIR / "rule_edges.parquet"
 RULE_PARAMETERS_PATH = RULEBOOK_PROCESSED_DIR / "rule_parameters.parquet"
 CODE_ASSIGNMENTS_PATH = RULEBOOK_PROCESSED_DIR / "code_assignments.parquet"
 SOURCE_ARTIFACTS_PATH = RULEBOOK_PROCESSED_DIR / "source_artifacts.parquet"
+ENTITY_SOURCE_LINKS_PATH = RULEBOOK_PROCESSED_DIR / "entity_source_links.parquet"
 
 PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
 SOURCE_SERVICE_PATH = PROCESSED_DIR / "nhea_source_service_1960_2024.parquet"

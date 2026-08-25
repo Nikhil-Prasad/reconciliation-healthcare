@@ -9,6 +9,7 @@ from typing import Any, Mapping
 import pandas as pd
 
 from reconciliation_healthcare.rulebook.models import CalculationStatus, PaymentTrace
+from reconciliation_healthcare.rulebook.provenance import enrich_trace_sources
 from reconciliation_healthcare.rulebook.store import RulebookStore
 from reconciliation_healthcare.rulebook.temporal import (
     TemporalResolutionError,
@@ -148,7 +149,7 @@ def _claim_context_warning(status_indicator: str) -> str:
     )
 
 
-def lookup_opps(
+def _lookup_opps(
     code: str,
     service_date: date | str,
     store: RulebookStore,
@@ -309,6 +310,27 @@ def lookup_opps(
                 warning=f"OPPS published-rate rule resolution failed closed: {error}",
             )
 
+    policy_rule_ids = ["opps.packaging"]
+    if status_indicator in {"J1", "J2"}:
+        policy_rule_ids.append("opps.comprehensive_apc")
+    for policy_rule_id in policy_rule_ids:
+        try:
+            policy_rule = store.rule(policy_rule_id)
+            select_effective(
+                [policy_rule], target, label=f"OPPS rule {policy_rule_id}"
+            )
+            selected_rules.append(policy_rule)
+        except (KeyError, TemporalResolutionError, ValueError) as error:
+            return _unsupported_trace(
+                code=normalized_code,
+                service_date=target,
+                missing_rule=policy_rule_id,
+                missing_parameters=["effective OPPS packaging-policy rule"],
+                selected_rule_versions=selected_rules,
+                source_artifact_ids=[source_artifact_id] if source_artifact_id else [],
+                warning=f"OPPS packaging-policy resolution failed closed: {error}",
+            )
+
     selected_parameter = {
         "assignment_id": _optional_text(assignment.get("assignment_id")),
         "assignment_type": "opps_hcpcs",
@@ -323,6 +345,12 @@ def lookup_opps(
         "source_artifact_id": source_artifact_id,
         "source_locator": _optional_text(assignment.get("source_locator")),
     }
+    selected_source_ids: list[str] = []
+    for record in (assignment, *selected_rules):
+        selected_source_id = _optional_text(record.get("source_artifact_id"))
+        if selected_source_id and selected_source_id not in selected_source_ids:
+            selected_source_ids.append(selected_source_id)
+
     return PaymentTrace(
         payment_system="OPPS",
         service_date=target,
@@ -344,5 +372,15 @@ def lookup_opps(
         amount_label="published national unadjusted OPPS payment rate (not final claim payment)",
         unsupported_adjustments=unsupported_adjustments,
         warnings=warnings,
-        source_artifact_ids=[source_artifact_id] if source_artifact_id else [],
+        source_artifact_ids=selected_source_ids,
     )
+
+
+def lookup_opps(
+    code: str,
+    service_date: date | str,
+    store: RulebookStore,
+) -> PaymentTrace:
+    """Return the OPPS lookup trace with all linked source authorities."""
+
+    return enrich_trace_sources(_lookup_opps(code, service_date, store), store)

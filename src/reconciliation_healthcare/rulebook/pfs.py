@@ -9,6 +9,7 @@ from typing import Any, Iterable, Mapping
 import pandas as pd
 
 from reconciliation_healthcare.rulebook.models import CalculationStatus, PaymentTrace
+from reconciliation_healthcare.rulebook.provenance import enrich_trace_sources
 from reconciliation_healthcare.rulebook.store import RulebookStore
 
 
@@ -167,6 +168,7 @@ def _indicator_requires_special_rule(value: object) -> bool:
 
 def _trace_assignment(record: Mapping[str, Any]) -> dict[str, Any]:
     return {
+        "assignment_id": _text(record.get("assignment_id")),
         "parameter_id": _text(record.get("assignment_id")),
         "rule_id": _text(record.get("rule_id")),
         "parameter_name": "code_assignment",
@@ -271,7 +273,7 @@ def _resolve_rule_versions(
     return [_trace_rule(rule) for rule in raw_rules], raw_rules
 
 
-def calculate_pfs(
+def _calculate_pfs(
     code: str,
     date_of_service: date | str,
     locality: str,
@@ -549,3 +551,24 @@ def calculate_pfs(
         ],
         source_artifact_ids=all_sources,
     )
+
+
+def calculate_pfs(
+    code: str,
+    date_of_service: date | str,
+    locality: str,
+    setting: str,
+    store: RulebookStore,
+    modifier: str | None = "",
+) -> PaymentTrace:
+    """Calculate the PFS base trace and attach all linked source authorities."""
+
+    trace = _calculate_pfs(
+        code,
+        date_of_service,
+        locality,
+        setting,
+        store,
+        modifier,
+    )
+    return enrich_trace_sources(trace, store)
