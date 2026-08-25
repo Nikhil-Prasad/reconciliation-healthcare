@@ -1,0 +1,323 @@
+{
+  "payment_system": "IPPS",
+  "service_date": "2024-09-30",
+  "calculation_status": "calculated",
+  "input_context": {
+    "ms_drg": "039",
+    "discharge_date": "2024-09-30",
+    "provider_ccn": "050008",
+    "quality_submitted": true,
+    "meaningful_ehr_user": true,
+    "provider_state": null,
+    "fiscal_year": "FY2024"
+  },
+  "selected_rule_versions": [
+    {
+      "rule_id": "ipps.fy2024.base_operating_payment",
+      "rule_version": "FY2024",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30",
+      "execution_status": "executable",
+      "source_artifact_id": "cms_ipps_fy2024_table1",
+      "source_locator": "Tables 1A/1B, 2, and 5"
+    },
+    {
+      "rule_id": "ipps.fy2024.ms_drg_weight",
+      "rule_version": "FY2024",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30",
+      "execution_status": "executable",
+      "source_artifact_id": "cms_ipps_fy2024_table5",
+      "source_locator": "Corrected/final table workbook"
+    },
+    {
+      "rule_id": "ipps.fy2024.standardized_amount",
+      "rule_version": "FY2024",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30",
+      "execution_status": "executable",
+      "source_artifact_id": "cms_ipps_fy2024_table1",
+      "source_locator": "Corrected/final table workbook"
+    },
+    {
+      "rule_id": "ipps.fy2024.wage_index",
+      "rule_version": "FY2024",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30",
+      "execution_status": "executable",
+      "source_artifact_id": "cms_ipps_fy2024_wage_tables",
+      "source_locator": "Corrected/final table workbook"
+    }
+  ],
+  "selected_parameters": [
+    {
+      "assignment_id": "ipps.fy2024.ms_drg.039",
+      "rule_id": "ipps.fy2024.ms_drg_weight",
+      "code": "039",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30",
+      "value_status": "published_final",
+      "source_artifact_id": "cms_ipps_fy2024_table5",
+      "source_locator": "CMS-1785-F Table 5.xlsx > FY 2024 Table 5 FR!H39",
+      "parameter_name": "ms_drg_weight",
+      "numeric_value": "1.1410"
+    },
+    {
+      "parameter_id": "ipps.fy2024.050008.wage_index",
+      "rule_id": "ipps.fy2024.wage_index",
+      "key_type": "ccn",
+      "key_value": "050008",
+      "provider_id": "050008",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30",
+      "unit": "index",
+      "value_status": "published_correction_notice",
+      "source_artifact_id": "cms_ipps_fy2024_wage_tables",
+      "source_locator": "CMS-1785-FR and CN Tables 2, 3, 4A, 4B.xlsx > Table 2 CN!G210",
+      "parameter_name": "wage_index",
+      "numeric_value": "1.8744"
+    },
+    {
+      "parameter_id": "ipps.fy2024.quality_submitted_ehr_user.labor_share_67.6.labor",
+      "rule_id": "ipps.fy2024.standardized_amount",
+      "key_type": "hospital_update_category_and_labor_share",
+      "key_value": "quality_submitted_ehr_user|labor_share=67.6",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30",
+      "unit": "USD",
+      "value_status": "published_final",
+      "source_artifact_id": "cms_ipps_fy2024_table1",
+      "source_locator": "CMS-1785-F Tables 1A - 1E.xlsx > FY 2024 FINAL Table 1A-1E!A5",
+      "parameter_name": "standardized_labor_amount",
+      "numeric_value": "4392.4900"
+    },
+    {
+      "parameter_id": "ipps.fy2024.quality_submitted_ehr_user.labor_share_67.6.nonlabor",
+      "rule_id": "ipps.fy2024.standardized_amount",
+      "key_type": "hospital_update_category_and_labor_share",
+      "key_value": "quality_submitted_ehr_user|labor_share=67.6",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30",
+      "unit": "USD",
+      "value_status": "published_final",
+      "source_artifact_id": "cms_ipps_fy2024_table1",
+      "source_locator": "CMS-1785-F Tables 1A - 1E.xlsx > FY 2024 FINAL Table 1A-1E!B5",
+      "parameter_name": "standardized_nonlabor_amount",
+      "numeric_value": "2105.2800"
+    }
+  ],
+  "components": {
+    "fiscal_year": "FY2024",
+    "ms_drg_relative_weight": "1.1410",
+    "wage_index": "1.8744",
+    "labor_share_percent": "67.6",
+    "operating_cola": "1",
+    "labor_standardized_amount": "4392.4900",
+    "nonlabor_standardized_amount": "2105.2800",
+    "wage_adjusted_labor_component": "8233.28325600",
+    "wage_adjusted_standardized_amount": "10338.56325600",
+    "unrounded_base_operating_payment": "11796.300675096000",
+    "base_operating_payment_9dp": "11796.300675096"
+  },
+  "calculated_amount": "11796.30",
+  "amount_label": "base_operating_payment_before_adjustments",
+  "unsupported_adjustments": [
+    "ime",
+    "dsh",
+    "uncompensated_care",
+    "ntap",
+    "outlier",
+    "hrrp",
+    "vbp",
+    "hac",
+    "transfer_policy",
+    "capital_payment",
+    "other_provider_specific_adjustments"
+  ],
+  "warnings": [
+    "Base IPPS operating payment is not a final claim payment."
+  ],
+  "source_artifact_ids": [
+    "cms_ipps_fy2024_table5",
+    "cms_ipps_fy2024_correction_notice",
+    "cms_ipps_fy2024_wage_tables",
+    "cms_ipps_fy2024_table1",
+    "cms_ipps_fy2024_final_rule",
+    "cms_ipps_fy2024_correction_notice_2"
+  ],
+  "source_links": [
+    {
+      "entity_type": "assignment",
+      "entity_id": "ipps.fy2024.ms_drg.039",
+      "source_artifact_id": "cms_ipps_fy2024_table5",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "CMS-1785-F Table 5.xlsx > FY 2024 Table 5 FR!H39",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "parameter",
+      "entity_id": "ipps.fy2024.050008.wage_index",
+      "source_artifact_id": "cms_ipps_fy2024_correction_notice",
+      "source_role": "correction",
+      "source_locator": "FY2024 IPPS correction notice",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "parameter",
+      "entity_id": "ipps.fy2024.050008.wage_index",
+      "source_artifact_id": "cms_ipps_fy2024_wage_tables",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "CMS-1785-FR and CN Tables 2, 3, 4A, 4B.xlsx > Table 2 CN!G210",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "parameter",
+      "entity_id": "ipps.fy2024.quality_submitted_ehr_user.labor_share_67.6.labor",
+      "source_artifact_id": "cms_ipps_fy2024_table1",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "CMS-1785-F Tables 1A - 1E.xlsx > FY 2024 FINAL Table 1A-1E!A5",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "parameter",
+      "entity_id": "ipps.fy2024.quality_submitted_ehr_user.labor_share_67.6.nonlabor",
+      "source_artifact_id": "cms_ipps_fy2024_table1",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "CMS-1785-F Tables 1A - 1E.xlsx > FY 2024 FINAL Table 1A-1E!B5",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "ipps.fy2024.base_operating_payment",
+      "source_artifact_id": "cms_ipps_fy2024_correction_notice",
+      "source_role": "correction",
+      "source_locator": "CMS-1785-CN; 88 FR 68482",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "ipps.fy2024.base_operating_payment",
+      "source_artifact_id": "cms_ipps_fy2024_table1",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "Tables 1A/1B, 2, and 5",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "ipps.fy2024.base_operating_payment",
+      "source_artifact_id": "cms_ipps_fy2024_final_rule",
+      "source_role": "regulatory_authority",
+      "source_locator": "CMS-1785-F; 88 FR 58640",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "ipps.fy2024.base_operating_payment",
+      "source_artifact_id": "cms_ipps_fy2024_correction_notice_2",
+      "source_role": "supporting_documentation",
+      "source_locator": "CMS-1785-CN2; 88 FR 77211",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "ipps.fy2024.ms_drg_weight",
+      "source_artifact_id": "cms_ipps_fy2024_table5",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "Corrected/final table workbook",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "ipps.fy2024.ms_drg_weight",
+      "source_artifact_id": "cms_ipps_fy2024_final_rule",
+      "source_role": "regulatory_authority",
+      "source_locator": "CMS-1785-F; 88 FR 58640",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "ipps.fy2024.ms_drg_weight",
+      "source_artifact_id": "cms_ipps_fy2024_correction_notice_2",
+      "source_role": "supporting_documentation",
+      "source_locator": "CMS-1785-CN2; 88 FR 77211",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "ipps.fy2024.standardized_amount",
+      "source_artifact_id": "cms_ipps_fy2024_table1",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "Corrected/final table workbook",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "ipps.fy2024.standardized_amount",
+      "source_artifact_id": "cms_ipps_fy2024_final_rule",
+      "source_role": "regulatory_authority",
+      "source_locator": "CMS-1785-F; 88 FR 58640",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "ipps.fy2024.standardized_amount",
+      "source_artifact_id": "cms_ipps_fy2024_correction_notice_2",
+      "source_role": "supporting_documentation",
+      "source_locator": "CMS-1785-CN2; 88 FR 77211",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "ipps.fy2024.wage_index",
+      "source_artifact_id": "cms_ipps_fy2024_correction_notice",
+      "source_role": "correction",
+      "source_locator": "CMS-1785-CN; 88 FR 68482",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "ipps.fy2024.wage_index",
+      "source_artifact_id": "cms_ipps_fy2024_wage_tables",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "Corrected/final table workbook",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "ipps.fy2024.wage_index",
+      "source_artifact_id": "cms_ipps_fy2024_final_rule",
+      "source_role": "regulatory_authority",
+      "source_locator": "CMS-1785-F; 88 FR 58640",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "ipps.fy2024.wage_index",
+      "source_artifact_id": "cms_ipps_fy2024_correction_notice_2",
+      "source_role": "supporting_documentation",
+      "source_locator": "CMS-1785-CN2; 88 FR 77211",
+      "effective_start": "2023-10-01",
+      "effective_end": "2024-09-30"
+    }
+  ],
+  "missing_rule": null,
+  "missing_parameters": []
+}

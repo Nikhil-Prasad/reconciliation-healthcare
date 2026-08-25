@@ -1,0 +1,136 @@
+{
+  "payment_system": "OPPS",
+  "service_date": "2024-03-31",
+  "calculation_status": "lookup_only",
+  "input_context": {
+    "code": "C1734"
+  },
+  "selected_rule_versions": [
+    {
+      "rule_id": "opps.2024_q1.hcpcs_status_apc",
+      "payment_system": "OPPS",
+      "rule_name": "HCPCS status-indicator and APC assignment",
+      "rule_version": "q1",
+      "effective_start": "2024-01-01",
+      "effective_end": "2024-03-31",
+      "rule_type": "classification",
+      "policy_function": "resource_pricing",
+      "unit_of_payment": "hospital outpatient service",
+      "trigger": "HCPCS present in effective Addendum B",
+      "input_description": "HCPCS and service date",
+      "output_description": "Status indicator and APC assignment",
+      "execution_status": "lookup_only",
+      "legal_authority": "Social Security Act \u00a71833(t)",
+      "regulatory_authority": "42 CFR Part 419; CY2024 OPPS rule CMS-1786-FC and correction CMS-1786-CN",
+      "source_artifact_id": "cms_opps_2024_q1_addendum_b",
+      "source_locator": "Addendum B CSV",
+      "notes": ""
+    },
+    {
+      "rule_id": "opps.packaging",
+      "payment_system": "OPPS",
+      "rule_name": "OPPS packaging",
+      "rule_version": "CY2024",
+      "effective_start": "2024-01-01",
+      "effective_end": "2024-12-31",
+      "rule_type": "packaging",
+      "policy_function": "utilization_control",
+      "unit_of_payment": "hospital outpatient claim",
+      "trigger": "Applicable status, APC, provider, or claim context",
+      "input_description": "Full outpatient claim context",
+      "output_description": "Payment adjustment or final payment",
+      "execution_status": "documented_only",
+      "legal_authority": "Social Security Act \u00a71833(t)",
+      "regulatory_authority": "42 CFR Part 419; CY2024 OPPS rule CMS-1786-FC and correction CMS-1786-CN",
+      "source_artifact_id": "cms_opps_2024_final_addenda",
+      "source_locator": "CY2024 OPPS regulation and quarterly Addendum B status indicators",
+      "notes": ""
+    }
+  ],
+  "selected_parameters": [
+    {
+      "assignment_id": "opps.2024_q1.C1734",
+      "assignment_type": "opps_hcpcs",
+      "code": "C1734",
+      "effective_start": "2024-01-01",
+      "effective_end": "2024-03-31",
+      "status_indicator": "N",
+      "apc": null,
+      "relative_weight": null,
+      "payment_rate": null,
+      "value_status": "published_quarter_snapshot",
+      "source_artifact_id": "cms_opps_2024_q1_addendum_b",
+      "source_locator": "Section 508 vesrion of January_Web_2024_Addendum_B.04.24.24.csv row 12021"
+    }
+  ],
+  "components": {
+    "code": "C1734",
+    "status_indicator": "N",
+    "apc": null,
+    "relative_weight": null,
+    "published_national_rate": null,
+    "packaging_rule": "Packaged into payment for other services; there is no separate APC payment.",
+    "claim_context_required": true,
+    "value_status": "published_quarter_snapshot"
+  },
+  "calculated_amount": null,
+  "amount_label": "published national unadjusted OPPS payment rate (not final claim payment)",
+  "unsupported_adjustments": [
+    "provider-specific OPPS wage adjustment",
+    "OPPS outlier payment",
+    "claim-level packaging",
+    "final claim adjudication",
+    "status-indicator-specific claim-level treatment"
+  ],
+  "warnings": [
+    "This is an OPPS Addendum B lookup, not a final hospital outpatient claim payment.",
+    "Provider wage adjustment, outlier payment, claim-level packaging, beneficiary cost sharing, units, modifiers, and other claim/provider-specific adjustments are not applied.",
+    "Status indicator N has no separate APC payment; claim context is required to identify the service into which it is packaged.",
+    "The effective Addendum B row has no published national payment rate."
+  ],
+  "source_artifact_ids": [
+    "cms_opps_2024_q1_addendum_b",
+    "cms_opps_2024_january_update",
+    "cms_opps_2024_final_addenda"
+  ],
+  "source_links": [
+    {
+      "entity_type": "assignment",
+      "entity_id": "opps.2024_q1.C1734",
+      "source_artifact_id": "cms_opps_2024_q1_addendum_b",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "Section 508 vesrion of January_Web_2024_Addendum_B.04.24.24.csv row 12021",
+      "effective_start": "2024-01-01",
+      "effective_end": "2024-03-31"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "opps.2024_q1.hcpcs_status_apc",
+      "source_artifact_id": "cms_opps_2024_january_update",
+      "source_role": "implementation_guidance",
+      "source_locator": "Quarterly CMS OPPS update memorandum",
+      "effective_start": "2024-01-01",
+      "effective_end": "2024-03-31"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "opps.2024_q1.hcpcs_status_apc",
+      "source_artifact_id": "cms_opps_2024_q1_addendum_b",
+      "source_role": "primary_numeric_authority",
+      "source_locator": "Addendum B CSV",
+      "effective_start": "2024-01-01",
+      "effective_end": "2024-03-31"
+    },
+    {
+      "entity_type": "rule",
+      "entity_id": "opps.packaging",
+      "source_artifact_id": "cms_opps_2024_final_addenda",
+      "source_role": "supporting_documentation",
+      "source_locator": "CY2024 OPPS regulation and quarterly Addendum B status indicators",
+      "effective_start": "2024-01-01",
+      "effective_end": "2024-12-31"
+    }
+  ],
+  "missing_rule": null,
+  "missing_parameters": []
+}
