@@ -353,10 +353,11 @@ def build_rule_graph() -> tuple[pd.DataFrame, pd.DataFrame]:
             RuleType.BASE_RATE,
             ExecutionStatus.DEFERRED,
         ),
-        ("opps.final_payment", "Final OPPS claim payment", RuleType.BASE_RATE, ExecutionStatus.DEFERRED),
+        ("opps.final_payment", "Final OPPS claim payment", RuleType.COMPOSITION, ExecutionStatus.DEFERRED),
     )
     for rule_id, name, rule_type, status in opps_documented:
         policy = {
+            RuleType.COMPOSITION: PolicyFunction.COMPOSITE,
             RuleType.GEOGRAPHIC_ADJUSTMENT: PolicyFunction.GEOGRAPHIC_ADJUSTMENT,
             RuleType.OUTLIER: PolicyFunction.RISK_ADJUSTMENT,
             RuleType.PACKAGING: PolicyFunction.UTILIZATION_CONTROL,
@@ -546,8 +547,8 @@ def build_rule_graph() -> tuple[pd.DataFrame, pd.DataFrame]:
         (
             "final_payment",
             "Final IPPS claim payment",
-            RuleType.BASE_RATE,
-            PolicyFunction.RESOURCE_PRICING,
+            RuleType.COMPOSITION,
+            PolicyFunction.COMPOSITE,
         ),
     )
     additive_adjustments = ("ime", "dsh", "uncompensated_care", "ntap", "outlier")

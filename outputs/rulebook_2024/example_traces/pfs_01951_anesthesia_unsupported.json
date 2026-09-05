@@ -49,5 +49,8 @@
     }
   ],
   "missing_rule": "pfs.anesthesia",
-  "missing_parameters": []
+  "missing_parameters": [],
+  "amount_kind": null,
+  "payment_unit": "professional_service",
+  "date_basis": "service_date"
 }

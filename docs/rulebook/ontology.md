@@ -10,11 +10,14 @@ unique and traces select it directly. Controlled dimensions are:
 
 - `rule_type`: classification, base rate, lookup, multiplier, add-on,
   reduction, geographic or setting adjustment, packaging, eligibility,
-  exclusion, cost sharing, budget neutrality, quality adjustment, or outlier.
+  exclusion, cost sharing, budget neutrality, quality adjustment, outlier,
+  or composition.
 - `policy_function`: a conservative functional label such as resource pricing,
   geographic adjustment, site of service, safety net, teaching subsidy,
   uncompensated care, innovation subsidy, quality incentive, utilization
-  control, or unknown.
+  control, composite, or unknown. These describe interpreted functions, not
+  demonstrated causal effects. Final-payment assembly uses `composite` so an
+  aggregate does not inherit only the function of its base component.
 - `execution_status`: `executable`, `lookup_only`, `documented_only`, or
   `deferred`.
 
@@ -96,3 +99,13 @@ service-date-active relationships used to construct the complete deduplicated
 `source_artifact_ids` set. A canonical store fails rather than emit a supported
 trace whose selected entity lacks an active link. `UNSUPPORTED` traces have no
 calculated amount and state the missing or unsupported rule explicitly.
+
+Traces also carry controlled `amount_kind`, `payment_unit`, and `date_basis`
+fields. The nullable quantity remains USD; the legacy `service_date` key is
+interpreted using the date basis, which is `discharge_date` for IPPS. Supported
+OPPS lookups can have a null amount with a known amount kind. Unsupported
+attempts retain the unit/date basis but expose no amount kind or numeric amount.
+`validate_trace` rejects inconsistent system/status/amount/date combinations.
+The exact mapping and compatibility implications are in the
+[semantic contract](../ontology/decisions.md), with
+[worked examples](../ontology/worked_examples.md) generated from the traces.

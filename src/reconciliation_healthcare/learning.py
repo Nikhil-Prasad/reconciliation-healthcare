@@ -1,0 +1,220 @@
+"""Build an offline learning guide from committed accounting and trace outputs."""
+
+from __future__ import annotations
+
+import csv
+from datetime import date
+from decimal import Decimal
+import json
+from pathlib import Path
+
+from reconciliation_healthcare.paths import PROJECT_ROOT
+from reconciliation_healthcare.rulebook.models import (
+    AmountKind,
+    CalculationStatus,
+    DateBasis,
+    PaymentTrace,
+    PaymentUnit,
+)
+from reconciliation_healthcare.rulebook.trace import validate_trace
+
+
+TRACE_DIRECTORY = Path("outputs/rulebook_2024/example_traces")
+LEDGER_FILE = Path("outputs/ledger_2024/national_ledger_2024.csv")
+GUIDE_FILE = Path("docs/ontology/worked_examples.md")
+EXAMPLES = {
+    "office": "pfs_99213_alabama_nonfacility_2024-03-09.json",
+    "facility": "pfs_99213_alabama_facility_2024-03-09.json",
+    "packaged": "opps_c1734_packaged_2024-03-31.json",
+    "september": "ipps_drg039_ccn050008_2024-09-30.json",
+    "october": "ipps_drg039_ccn050008_2024-10-01.json",
+    "unsupported": "pfs_01951_anesthesia_unsupported.json",
+}
+
+
+def _read_trace(path: Path) -> PaymentTrace:
+    """Read the top-level contract; nested display values remain JSON values."""
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["service_date"] = date.fromisoformat(payload["service_date"])
+    payload["calculation_status"] = CalculationStatus(payload["calculation_status"])
+    payload["date_basis"] = DateBasis(payload["date_basis"])
+    payload["payment_unit"] = PaymentUnit(payload["payment_unit"])
+    if payload["amount_kind"] is not None:
+        payload["amount_kind"] = AmountKind(payload["amount_kind"])
+    if payload["calculated_amount"] is not None:
+        payload["calculated_amount"] = Decimal(payload["calculated_amount"])
+    trace = PaymentTrace(**payload)
+    validate_trace(trace)
+    return trace
+
+
+def _money(amount: Decimal | None) -> str:
+    if amount is None:
+        return "No numeric amount"
+    return f"${amount:,.2f}"
+
+
+def render_worked_examples(project_root: Path) -> str:
+    """Explain published outputs without rerunning or approximating payment logic."""
+    traces = {
+        key: _read_trace(project_root / TRACE_DIRECTORY / name)
+        for key, name in EXAMPLES.items()
+    }
+    with (project_root / LEDGER_FILE).open(encoding="utf-8", newline="") as handle:
+        hospital_rows = [
+            row for row in csv.DictReader(handle)
+            if row["service_category_code"] == "hospital_care"
+        ]
+    if len(hospital_rows) != 1:
+        raise ValueError("Expected exactly one Hospital Care ledger row")
+    medicare_hospital = Decimal(hospital_rows[0]["Medicare"])
+
+    office, facility = traces["office"], traces["facility"]
+    for key in ("code", "modifier", "date_of_service", "locality"):
+        if office.input_context[key] != facility.input_context[key]:
+            raise ValueError(f"PFS comparison contexts differ on {key}")
+    if (office.input_context["setting"], facility.input_context["setting"]) != (
+        "nonfacility", "facility"
+    ):
+        raise ValueError("PFS comparison needs nonfacility and facility contexts")
+    if any(t.calculation_status is not CalculationStatus.CALCULATED for t in (office, facility)):
+        raise ValueError("PFS comparison requires two calculated base amounts")
+
+    packaged = traces["packaged"]
+    if packaged.components["status_indicator"] != "N" or packaged.calculated_amount is not None:
+        raise ValueError("Packaging example requires status N and a null published rate")
+    september, october = traces["september"], traces["october"]
+    for key in ("ms_drg", "provider_ccn", "quality_submitted", "meaningful_ehr_user"):
+        if september.input_context[key] != october.input_context[key]:
+            raise ValueError(f"IPPS boundary contexts differ on {key}")
+    if (september.service_date, october.service_date) != (date(2024, 9, 30), date(2024, 10, 1)):
+        raise ValueError("IPPS example requires the September 30 / October 1 boundary")
+    unsupported = traces["unsupported"]
+    if unsupported.calculation_status is not CalculationStatus.UNSUPPORTED:
+        raise ValueError("Anesthesia example must remain unsupported")
+
+    def source(key: str) -> str:
+        name = EXAMPLES[key]
+        return f"[{name}](../../{TRACE_DIRECTORY.as_posix()}/{name})"
+
+    pfs_rows = "\n".join(
+        f"| {trace.input_context['setting']} | {trace.components['practice_expense_rvu']} "
+        f"| {_money(trace.calculated_amount)} | `{trace.amount_kind}` |"
+        for trace in (office, facility)
+    )
+    ipps_rows = "\n".join(
+        f"| {trace.service_date} | {trace.components['fiscal_year']} "
+        f"| {trace.components['ms_drg_relative_weight']} | {trace.components['wage_index']} "
+        f"| {_money(trace.calculated_amount)} |"
+        for trace in (september, october)
+    )
+    return f"""# Worked ontology examples
+
+Generated by `make ontology-guide` from committed output files. These are
+explanations of the pinned 2024 model, not observed individual claims or current
+payment advice. No CMS download or payment calculation runs in this command.
+
+## 1. A national spending observation
+
+The 2024 Hospital Care row reports **${medicare_hospital:,.0f}** in the Medicare
+column, or **${medicare_hospital / Decimal('1000000000'):.3f} billion**.
+
+- Object: one national source/service expenditure observation.
+- Unit and precision: current USD, originally reported in integer millions;
+  the dollar rendering does not create cent-level measurement precision.
+- Coverage: the published Medicare category, without an inferred FFS/MA split.
+- Provenance: [ledger CSV](../../{LEDGER_FILE.as_posix()}); the normalized
+  long-form companion retains the exact CMS source cell.
+- Permitted conclusion: the reported size of this accounting category.
+- Missing evidence: individual encounters, provider identities, volumes, resource
+  costs, and the share that our selected FFS base formulas could explain.
+
+Discussion prompt: what additional information would turn this category total
+into a defensible statement about the cost of one inpatient episode?
+
+## 2. Facility and nonfacility professional base fees
+
+Both inputs use code `{office.input_context['code']}`, locality
+`{office.input_context['locality']}`, and date `{office.service_date}`.
+The practice-expense component differs with the selected setting.
+
+| Setting | Practice-expense RVU | Professional base amount | Amount kind |
+|---|---:|---:|---|
+{pfs_rows}
+
+The work, practice-expense, and malpractice components are geographically
+adjusted, summed, and multiplied by the conversion factor. The source traces
+retain every input and intermediate component:
+{source('office')}; {source('facility')}.
+
+The output unit is `{office.payment_unit}` and the date basis is
+`{office.date_basis}`. Neither amount is total encounter spending. A facility
+encounter can also involve institutional payment and other services; a complete
+comparison needs those components and comparable patient/service context.
+[CMS explains the different resource boundaries](https://www.cms.gov/newsroom/fact-sheets/calendar-year-cy-2024-medicare-physician-fee-schedule-final-rule).
+
+Discussion prompt: which missing payments and clinical facts would you collect
+before interpreting the difference as potential savings?
+
+## 3. A packaged outpatient service
+
+Code `{packaged.input_context['code']}` on `{packaged.service_date}` resolves
+with status indicator `{packaged.components['status_indicator']}` and
+calculation status `{packaged.calculation_status}`. Its published amount is
+**null**, with amount kind `{packaged.amount_kind}`.
+
+The assignment was found. Its status indicates packaging into other services,
+so the lookup does not publish a separate APC payment. It does not report a
+zero-cost service, a free resource, or the amount of the whole claim.
+The payment unit is `{packaged.payment_unit}`. Source: {source('packaged')}.
+
+Discussion prompt: how would summing separately published code rates misrepresent
+a claim whose services are packaged together?
+
+## 4. An inpatient discharge across a fiscal-year boundary
+
+Both examples use provider CCN `{september.input_context['provider_ccn']}` and
+MS-DRG `{september.input_context['ms_drg']}`, with the same quality/EHR flags.
+
+| Discharge date | Fiscal year | MS-DRG weight | Provider wage index | Base operating payment |
+|---|---|---:|---:|---:|
+{ipps_rows}
+
+The payment unit is `{september.payment_unit}` and the date basis is
+`{september.date_basis}`. The compatibility key `service_date` therefore contains
+the discharge date. The rate, weight, and wage-index versions switch together;
+this is a comparison of prescribed base amounts, not hospital production costs.
+Sources: {source('september')}; {source('october')}.
+
+Discussion prompt: why could two otherwise comparable discharges require
+different rule authorities even within the same calendar year?
+
+## 5. An unsupported calculation
+
+Code `{unsupported.input_context['code']}` returns
+`{unsupported.calculation_status}`, no amount, and missing rule
+`{unsupported.missing_rule}`. The attempted unit remains
+`{unsupported.payment_unit}`, with date basis `{unsupported.date_basis}`.
+
+The ordinary PFS engine lacks the required anesthesia path. This is a limitation
+of implementation coverage, not evidence that Medicare pays nothing for the
+service. Source: {source('unsupported')}.
+
+Discussion prompt: how would replacing this missing amount with zero distort a
+comparison between service types?
+
+Continue with [modeling decisions](decisions.md) and the
+[data connection inventory](data_connections.md).
+"""
+
+
+def main() -> None:
+    output = PROJECT_ROOT / GUIDE_FILE
+    content = render_worked_examples(PROJECT_ROOT)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(content, encoding="utf-8")
+    print(f"Wrote {output}")
+
+
+if __name__ == "__main__":
+    main()

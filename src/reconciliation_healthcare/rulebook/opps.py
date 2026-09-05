@@ -8,7 +8,13 @@ from typing import Any, Mapping
 
 import pandas as pd
 
-from reconciliation_healthcare.rulebook.models import CalculationStatus, PaymentTrace
+from reconciliation_healthcare.rulebook.models import (
+    AmountKind,
+    CalculationStatus,
+    DateBasis,
+    PaymentTrace,
+    PaymentUnit,
+)
 from reconciliation_healthcare.rulebook.provenance import enrich_trace_sources
 from reconciliation_healthcare.rulebook.store import RulebookStore
 from reconciliation_healthcare.rulebook.temporal import (
@@ -110,6 +116,8 @@ def _unsupported_trace(
     return PaymentTrace(
         payment_system="OPPS",
         service_date=service_date,
+        payment_unit=PaymentUnit.OUTPATIENT_HCPCS_LOOKUP,
+        date_basis=DateBasis.SERVICE_DATE,
         calculation_status=CalculationStatus.UNSUPPORTED,
         input_context={"code": code},
         selected_rule_versions=selected_rule_versions or [],
@@ -354,6 +362,9 @@ def _lookup_opps(
     return PaymentTrace(
         payment_system="OPPS",
         service_date=target,
+        amount_kind=AmountKind.OPPS_PUBLISHED_RATE,
+        payment_unit=PaymentUnit.OUTPATIENT_HCPCS_LOOKUP,
+        date_basis=DateBasis.SERVICE_DATE,
         calculation_status=CalculationStatus.LOOKUP_ONLY,
         input_context={"code": normalized_code},
         selected_rule_versions=selected_rules,

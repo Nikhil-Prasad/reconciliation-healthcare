@@ -1,4 +1,4 @@
-.PHONY: reproduce reproduce-stage1 reproduce-rulebook
+.PHONY: reproduce reproduce-stage1 reproduce-rulebook ontology-guide
 
 UV ?= uv
 PROJECT_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
@@ -17,4 +17,8 @@ reproduce-rulebook:
 	$(UV) run --directory "$(PROJECT_DIR)" --locked --no-sync hcl-rulebook-download
 	$(UV) run --directory "$(PROJECT_DIR)" --locked --no-sync hcl-rulebook-build
 	$(UV) run --directory "$(PROJECT_DIR)" --locked --no-sync hcl-rulebook-validate
+	$(UV) run --directory "$(PROJECT_DIR)" --locked --no-sync python -m reconciliation_healthcare.learning
 	$(UV) run --directory "$(PROJECT_DIR)" --locked --no-sync pytest -q
+
+ontology-guide:
+	$(UV) run --directory "$(PROJECT_DIR)" --locked --no-sync python -m reconciliation_healthcare.learning

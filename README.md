@@ -8,6 +8,20 @@ effective-dated CY2024 Medicare fee-for-service core payment rulebook for PFS,
 OPPS, and IPPS. Neither stage estimates waste, rents, margins, fraud, or
 counterfactual prices, and neither makes policy recommendations.
 
+## Understand the model
+
+Start with the [ontology learning guide](docs/ontology/README.md): concept
+definitions, relationships, generated worked examples, modeling decisions,
+and a bounded inventory of possible connections to utilization, costs, and
+outcomes. `make ontology-guide` rebuilds its examples from committed outputs
+without downloading CMS archives, after installing the locked environment.
+
+Payment traces carry explicit `amount_kind`, `payment_unit`, and `date_basis`
+metadata. These distinguish partial base amounts from published rate lookups
+and make the IPPS discharge-date semantics explicit. Final-payment assembly
+nodes are marked `composition` / `composite`, preserving the different policy
+functions of their components. See the [semantic contract](docs/ontology/decisions.md).
+
 ## Reproduce everything
 
 ```bash
