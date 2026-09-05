@@ -285,5 +285,8 @@
     }
   ],
   "missing_rule": null,
-  "missing_parameters": []
+  "missing_parameters": [],
+  "amount_kind": "pfs_base_payment",
+  "payment_unit": "professional_service",
+  "date_basis": "service_date"
 }

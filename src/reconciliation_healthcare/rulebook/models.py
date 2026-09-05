@@ -10,6 +10,7 @@ from typing import Any
 
 
 class RuleType(StrEnum):
+    COMPOSITION = "composition"
     CLASSIFICATION = "classification"
     BASE_RATE = "base_rate"
     LOOKUP = "lookup"
@@ -28,6 +29,7 @@ class RuleType(StrEnum):
 
 
 class PolicyFunction(StrEnum):
+    COMPOSITE = "composite"
     RESOURCE_PRICING = "resource_pricing"
     GEOGRAPHIC_ADJUSTMENT = "geographic_adjustment"
     RISK_ADJUSTMENT = "risk_adjustment"
@@ -56,6 +58,29 @@ class CalculationStatus(StrEnum):
     CALCULATED = "calculated"
     LOOKUP_ONLY = "lookup_only"
     UNSUPPORTED = "unsupported"
+
+
+class AmountKind(StrEnum):
+    """Meaning of the nullable USD quantity, distinct from an observed payment."""
+
+    PFS_BASE_PAYMENT = "pfs_base_payment"
+    OPPS_PUBLISHED_RATE = "opps_published_national_unadjusted_rate"
+    IPPS_BASE_OPERATING_PAYMENT = "ipps_base_operating_payment"
+
+
+class PaymentUnit(StrEnum):
+    """Grain of a calculation or lookup, including an unsupported attempt."""
+
+    PROFESSIONAL_SERVICE = "professional_service"
+    OUTPATIENT_HCPCS_LOOKUP = "outpatient_hcpcs_lookup"
+    INPATIENT_DISCHARGE = "inpatient_discharge"
+
+
+class DateBasis(StrEnum):
+    """Meaning of the legacy service_date field used to resolve rule versions."""
+
+    SERVICE_DATE = "service_date"
+    DISCHARGE_DATE = "discharge_date"
 
 
 class EntityType(StrEnum):
@@ -107,6 +132,9 @@ class PaymentTrace:
     source_links: list[dict[str, Any]] = field(default_factory=list)
     missing_rule: str | None = None
     missing_parameters: list[str] = field(default_factory=list)
+    amount_kind: AmountKind | None = None
+    payment_unit: PaymentUnit | None = None
+    date_basis: DateBasis | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """Return a JSON-safe representation without losing decimal precision."""

@@ -355,5 +355,8 @@
     }
   ],
   "missing_rule": null,
-  "missing_parameters": []
+  "missing_parameters": [],
+  "amount_kind": "ipps_base_operating_payment",
+  "payment_unit": "inpatient_discharge",
+  "date_basis": "discharge_date"
 }

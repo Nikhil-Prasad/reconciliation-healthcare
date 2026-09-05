@@ -2,6 +2,10 @@
 
 ## Scope and unit of observation
 
+For a guided introduction and cross-layer discussion, see the
+[ontology learning guide](ontology/README.md). The Stage 1 schema and all
+accounting invariants below remain unchanged.
+
 The v0.1 ledger is a national expenditure account, not a database of adjudicated
 insurance claims. Its canonical object is a **reported financial-flow observation**:
 
@@ -169,6 +173,10 @@ Reserved for a future analytical classification such as direct public,
 formula-based, government-subsidized private, guaranteed/backstopped,
 predominantly private, mixed, or unknown. It is null throughout v0.1 because the
 current sources do not establish a reviewed, unambiguous mapping at the flow level.
+
+The proposed labels mix financing, price-setting, ownership, and public support.
+They are not a mutually exclusive taxonomy. Before this field is populated,
+review the [proposal for separate sourced axes](ontology/decisions.md).
 
 ## Accounting views
 

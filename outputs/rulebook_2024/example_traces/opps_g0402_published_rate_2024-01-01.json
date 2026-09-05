@@ -167,5 +167,8 @@
     }
   ],
   "missing_rule": null,
-  "missing_parameters": []
+  "missing_parameters": [],
+  "amount_kind": "opps_published_national_unadjusted_rate",
+  "payment_unit": "outpatient_hcpcs_lookup",
+  "date_basis": "service_date"
 }

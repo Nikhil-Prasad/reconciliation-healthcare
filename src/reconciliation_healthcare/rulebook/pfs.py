@@ -8,7 +8,13 @@ from typing import Any, Iterable, Mapping
 
 import pandas as pd
 
-from reconciliation_healthcare.rulebook.models import CalculationStatus, PaymentTrace
+from reconciliation_healthcare.rulebook.models import (
+    AmountKind,
+    CalculationStatus,
+    DateBasis,
+    PaymentTrace,
+    PaymentUnit,
+)
 from reconciliation_healthcare.rulebook.provenance import enrich_trace_sources
 from reconciliation_healthcare.rulebook.store import RulebookStore
 
@@ -237,6 +243,8 @@ def _unsupported(
     return PaymentTrace(
         payment_system=_PFS,
         service_date=service_date,
+        payment_unit=PaymentUnit.PROFESSIONAL_SERVICE,
+        date_basis=DateBasis.SERVICE_DATE,
         calculation_status=CalculationStatus.UNSUPPORTED,
         input_context=input_context,
         selected_rule_versions=selected_rules or [],
@@ -519,6 +527,9 @@ def _calculate_pfs(
     return PaymentTrace(
         payment_system=_PFS,
         service_date=target_date,
+        amount_kind=AmountKind.PFS_BASE_PAYMENT,
+        payment_unit=PaymentUnit.PROFESSIONAL_SERVICE,
+        date_basis=DateBasis.SERVICE_DATE,
         calculation_status=CalculationStatus.CALCULATED,
         input_context=context,
         selected_rule_versions=selected_rules,
